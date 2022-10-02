@@ -1,0 +1,2 @@
+# computationalIntelligence_2022_s301247
+Computational Intelligence course workshops
