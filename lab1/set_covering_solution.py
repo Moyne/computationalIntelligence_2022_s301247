@@ -39,6 +39,8 @@ def problem(N, seed=None):
     ]
 
 def __lentup__(a):
+    """This functions returns the length of a tuple with multiple tuples inside, so just the sum of
+    the inner tuples length"""
     len_=0
     for i in a:
         len_+=len(i)
@@ -71,15 +73,12 @@ def result(state,action):
 
 def search(initial_state:tuple,
     actions:Callable,
-    goal_test:Callable,
-    parent_state:dict,state_cost:dict,
+    goal_test:Callable,state_cost:dict,
     priority_function:Callable,priority_function_inner:Callable):
     """This function search for a valid solution"""
     frontier = PriorityQueue()
-    parent_state.clear()
     state_cost.clear()
     state = initial_state
-    parent_state[state] = None
     state_cost[state] = 0
     while state is not None and not goal_test(state):
         #iterate through the actions of the state itself
@@ -89,11 +88,12 @@ def search(initial_state:tuple,
             u_cost= 1
             state_cost_new_state=state_cost[state]+u_cost
             prio_=priority_function_inner(new_state)
+            #here the METRIC is checked so if in this level we reached a bad priority we shouldn't
+            #even add this state to the frontier and just continue with the next iteration
             if prio_>METRIC[state_cost_new_state]:
                 continue
             if new_state not in state_cost and new_state not in frontier:
                 #add this new state to the parent state and state cost dictionaries
-                parent_state[new_state]=state
                 state_cost_new_state=state_cost[state]+u_cost
                 state_cost[new_state]=state_cost_new_state
                 #push this new state into the frontier
@@ -109,16 +109,9 @@ def search(initial_state:tuple,
             state=None
             print("Couldn't find any solution")
     #iterate through the state to get its path
-    path = list()
-    s = state
-    while s:
-        path.append(s)
-        s = parent_state[s]
-    print(f"Found a solution in {len(path):,} steps; visited {len(state_cost):,} states")
-    """if state:
+    if state:
         print(f"Found a solution in {len(state):,} steps; visited {len(state_cost):,} states")
-    return state"""
-    return list(reversed(path))
+    return state
 
 def set_covering(numbers):
     """interface to the system, numbers is the list of size of problems we want to solve"""
@@ -130,6 +123,7 @@ def set_covering(numbers):
         global prob
         prob=tuple([tuple(a) for a in probl])
         #logging.info(f"Problem with value {NUMBER} : {prob}")
+        #METRIC generation, this heuristic was derived from other tries with growing N
         global METRIC
         METRIC=tuple([0,0,2]+[_*5 for _ in range(1,len(prob))])
         #setup for the search
@@ -144,13 +138,11 @@ def set_covering(numbers):
         state_cost=dict()
         times_=perf_counter()
         state=tuple([()])
-        parent_state=dict()
-        sol=search(initial_state=state,actions=actions_,goal_test=goal_test,parent_state=parent_state,state_cost=state_cost,
+        sol=search(initial_state=state,actions=actions_,goal_test=goal_test,state_cost=state_cost,
             priority_function=lambda a: a,priority_function_inner=lambda a: -len(sequence_found(a))+__lentup__(a))
         print(f"The search for problem of value {NUMBER} lasted {perf_counter()-times_}")
-        if len(sol)>0:
-            sol_=sol[len(sol)-1]
-            print(f"Path {sol} Solution {sol_} with weight {__lentup__(sol_)}")
+        if sol:
+            print(f"Solution {sol} with weight {__lentup__(sol)}")
 
 #call the interface to solve the problems with the list of size of problems
-set_covering([100])
+set_covering([50])

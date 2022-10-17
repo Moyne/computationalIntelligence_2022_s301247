@@ -1,13 +1,15 @@
 ### ****PROPOSED SOLUTION FOR THE SET COVERING PROBLEM**** ###
 ***s301247@studenti.polito.it Mohamed Amine Hamdi***
 
+#### *note: states visited are counted as all the elements added to the frontier, not the ones popped from it*
+
 This solution is a mix between a beam search, A* and best first algorithms.
 
 The code alone can be found in ***set_covering_solution.py***
 
 This is because to keep track of states to visit next we have a priority queue where optimal states are favorited because the priority function calculates the amount of elements seen and take the unary minus of it and add it to the size of the state, so if a state is optimal it will have priority function 0 and will get chosen as the first candidate, so we aren't going breadth first because if a state is horrible we may never reach the point where the priority queue pops it.
 
-After this point I chose a metric of where to stop at each level, this is done because otherwise the problem will explode too much space wise, so to contain it I chose the ***metric*** (0,2,5,10,15,...,etc.), this metric is used so if a state gets a priority of 20 and it is on the third level of the tree we will cut it immediately knowing this solution doesn't provide any good and we save some precious memory.
+After this point I chose a metric of where to stop at each level, this is done because otherwise the problem will explode too much space wise, so to contain it I chose the ***metric*** (0,2,5,10,15,...,etc.), this metric is used so if a state gets a priority of 20 and it is on the third level of the tree we will cut it immediately because 20>METRIC[3] so 20>10, knowing this we can guarantee with a really really high confidence that continuing with that state and expanding it wouldn't generate a good solution, so instead we only expand states that are in the range of our metric, this mechanism let us save a lot of precious memory and generate with a good confidence a solution that we can say is optimal in a reasonable amount of time also for big Ns(20 mins for N=50 getting the optimal weight 65) and keeping the memory down without exploding it.
 
 The metric seems to be working not too badly but for sure it could be better, I chose this starting testing other solutions(can be checked on the last part of this notebook or in ***other_solutions.py***) and noticing how the optimal solution was growing, so for example the optimal solution with ***N=20*** had weight ***23*** while for ***N=40*** it had weight ***54***, so I tried to approximize how much loss for each level we have usually before finding the optimal solution, obviously this metric works better in some cases than others but for my testing it can generate the optimal solution without exploding in space too much.
 
@@ -16,6 +18,8 @@ The metric seems to be working not too badly but for sure it could be better, I 
 The states are represented as a ***tuple of tuples***, this is done because tuples are immutables like our states and also this gives us theoretically a slight edge on performance with respect to lists, I used tuples also because I wanted to keep track of duplicate states and to do so I needed a hashable data structure without the need to write a hash function for a data structure, the other go to data structure was a set but it lacked this part.
 
 A module used all over my implementations is the bisect one, this is because my states are tuples that are always ordered, so two states that have the same sets can be skipped because just doing a simple ***if in frontier or in state_cost*** will get them because the hash will be equivalent, this module helps me inserting in order because it divides the tuple in two and searches for the position recursevely.
+
+Another piece used was the PriorityQueue version of prof.Squillero.
 
 (In other solutions I used as a state a tuple of numbers representing the sets of integers picked inyo this state, this gave the program a small improvement of memory, but after the use of the metric the space explosion was resolved and so memory was not an issue so I got back to the first implementation of states)
 
@@ -39,6 +43,8 @@ The code was developed stricly by me but before the final solution I discussed v
 ***Set covering problem data***
 
 ## Results proposed solution (other solutions have interesting data as well, especially with width limitation)
+
+#### *note: states visited are counted as all the elements added to the frontier, not the ones popped from it*
 
 Results with N:
 
@@ -72,7 +78,7 @@ Solutions with other implementations, can see immediately the huge difference in
 
 ***Anyway we can see by the solutions with 50 that the width limitations can help really really a lot without causing much loss in the optimality of the solution, so we can evince that an implementation that can guarantee limitation in both width and metrics can be really effective.***
 
-
+#### *note: states visited are counted as all the elements added to the frontier, not the ones popped from it*
 
 - 5:
 - - problem : ((0,), (1,), (0,), (4,), (0,), (1,), (4,), (4,), (4,), (1, 3), (0, 1), (2,), (1,), (0,), (0, 2), (2, 4), (3,), (3,), (4,), (2, 4), (0,), (1,), (0, 1), (3,), (2, 3))
