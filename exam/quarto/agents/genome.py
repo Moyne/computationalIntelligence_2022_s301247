@@ -32,8 +32,10 @@ class Genome(quarto.Player):
         self.evaluating=False
         self.evaluating_genome=False
         self.random_pick=0
+        #print(f'\tChoose piece rules :\n {NEWLINE.join([str(rule) for rule in self.choose_piece_rules])} \n\t;Place piece rules:\n {NEWLINE.join([str(rule) for rule in self.place_piece_rules])}')
         if choose_piece_rules is None:
             self.evaluate_fitness()
+            print(f'Generated genome with fitness {self.fitness}')
     
     def set_quarto(self,quarto):
         self.quarto=quarto
@@ -157,7 +159,7 @@ class Genome(quarto.Player):
         self.evaluating_genome=True
         wins=0
         #print(f'\tNow evaluating whole genome')
-        for _ in range(25):
+        for _ in range(100):
             game = quarto.Quarto()
             playerindex=random.randint(0,1)
             game.set_players((RandomPlayer(game), self) if playerindex==1 else (self, RandomPlayer(game)))
@@ -166,9 +168,9 @@ class Genome(quarto.Player):
             #print(f'\tWon ? {winner==playerindex}')
             if winner==playerindex:
                 wins+=1
-        self.fitness= wins/25 + (-0.05)*self.random_pick
+        self.fitness= wins - self.random_pick
         #print(f'Won in total {wins} games, total of {self.random_pick} random picks so fitness is {self.fitness}')
 
 
     def __str__(self):
-        return f'\tChoose piece rules :\n {NEWLINE.join([str(rule) for rule in self.choose_piece_rules])} \n\t;Place piece rules:\n {NEWLINE.join([str(rule) for rule in self.place_piece_rules])}'
+        return f'\tChoose piece rules :\n{NEWLINE.join([str(rule) for rule in self.choose_piece_rules])} \n\t; Place piece rules :\n{NEWLINE.join([str(rule) for rule in self.place_piece_rules])}'

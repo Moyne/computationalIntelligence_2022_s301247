@@ -3,15 +3,16 @@ import random
 import quarto
 import numpy as np
 from scipy.stats import binom
-import pickle
+import dill as pickle
 from .genome import Genome
 
 class GeneticProgramming:
     def __init__(self) -> None:
         self.__POPULATION_SIZE__=5
-        self.__OFFSPRING_SIZE__=20
-        self.population=[Genome(None) for _ in range(self.__POPULATION_SIZE__)]
-        self.population=sorted(self.population,key=lambda a: a.fitness,reverse=True)
+        self.__OFFSPRING_SIZE__=30
+        print(f'Generating initial population ...')
+        self.population=[Genome(None) for _ in range(2*self.__POPULATION_SIZE__)]
+        self.population=sorted(self.population,key=lambda a: a.fitness,reverse=True)[:self.__POPULATION_SIZE__]
         self.WEIGHTS_ROULETTE=[binom.pmf(k=_,n=self.__POPULATION_SIZE__-1,p=1/self.__POPULATION_SIZE__) for _ in range(self.__POPULATION_SIZE__)]
 
     def select_parent(self,k=2,weigths=None):
@@ -37,7 +38,7 @@ class GeneticProgramming:
             for o in range(self.__OFFSPRING_SIZE__):
                 #always mutate
                 cross=True
-                if random.random()<2:
+                if random.random()<0.7:
                     cross=False
                     parent=self.select_parent(k=1,weigths=weigths)[0]
                     off=Genome(parent.quarto,parent.choose_piece_rules,parent.place_piece_rules)

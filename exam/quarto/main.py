@@ -7,7 +7,7 @@ import quarto
 from agents.genetic import GeneticProg as gp
 from agents.genome import Genome as myplayer
 from agents.genome import RandomPlayer 
-import pickle
+import dill as pickle
 from os.path import isfile
 
 
