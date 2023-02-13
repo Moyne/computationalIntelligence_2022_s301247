@@ -199,12 +199,12 @@ class IfNode:
                         if self.value in IF_OPERATIONS_WITH_ONE_OPERAND and len(self.childs)==2:
                             #remove one of the two childs in case
                             self.childs.pop(random.randint(0,len(self.childs)-1))
-                        elif self.value not in IF_OPERATIONS_WITH_ONE_OPERAND and len(self.childs)==1:
+                        elif (self.value not in IF_OPERATIONS_WITH_ONE_OPERAND) and (len(self.childs)==1):
                             self.childs.append(IfNode(self,self.choose_piece,self.quarto))
                         num=random.randint(0,6)
                         if num==0 or num==2:
                             self.childs[0].mutate()
-                        if num==1 or num==2 and self.value not in IF_OPERATIONS_WITH_ONE_OPERAND:
+                        if (num==1 or num==2) and (self.value not in IF_OPERATIONS_WITH_ONE_OPERAND):
                             self.childs[1].mutate()
                     else:
                         self.childs=[]
@@ -227,12 +227,12 @@ class IfNode:
                         if self.value in IF_OPERATIONS_WITH_ONE_OPERAND and len(self.childs)==2:
                             #remove one of the two childs in case
                             self.childs.pop(random.randint(0,len(self.childs)-1))
-                        elif self.value not in IF_OPERATIONS_WITH_ONE_OPERAND and len(self.childs)==1:
+                        elif (self.value not in IF_OPERATIONS_WITH_ONE_OPERAND) and (len(self.childs)==1):
                             self.childs.append(IfNode(self,self.choose_piece,self.quarto))
                         num=random.randint(0,6)
                         if num==0 or num==2:
                             self.childs[0].mutate()
-                        if num==1 or num==2 and self.value not in IF_OPERATIONS_WITH_ONE_OPERAND:
+                        if (num==1 or num==2) and (self.value not in IF_OPERATIONS_WITH_ONE_OPERAND):
                             self.childs[1].mutate()
                     else:
                         self.childs=[]
