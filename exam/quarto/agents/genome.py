@@ -8,6 +8,8 @@ import numpy as np
 NUMROWS=4
 NUMCOLUMNS=4
 NEWLINE="\n"
+MINRULES=5
+MAXRULES=10
 class RandomPlayer(quarto.Player):
     """Random player"""
 
@@ -24,8 +26,8 @@ class Genome(quarto.Player):
     def __init__(self,quarto: quarto.Quarto,choose_piece_rules=None,place_piece_rules=None) -> None:
         super().__init__(quarto)
         self.quarto=quarto
-        self.choose_piece_rules=copy.deepcopy(choose_piece_rules) if choose_piece_rules is not None else [Rule(True,None) for _ in range(random.randint(5,9))]
-        self.place_piece_rules=copy.deepcopy(place_piece_rules) if place_piece_rules is not None else [Rule(False,None) for _ in range(random.randint(5,9))]
+        self.choose_piece_rules=copy.deepcopy(choose_piece_rules) if choose_piece_rules is not None else [Rule(True,None) for _ in range(random.randint(MINRULES,MAXRULES))]
+        self.place_piece_rules=copy.deepcopy(place_piece_rules) if place_piece_rules is not None else [Rule(False,None) for _ in range(random.randint(MINRULES,MAXRULES))]
         self.evaluating_choose_piece_rules=self.choose_piece_rules
         self.evaluating_place_piece_rules=self.place_piece_rules
         self.fitness=0
@@ -91,13 +93,13 @@ class Genome(quarto.Player):
         return random_place(self.quarto)
     
     def mutate(self):
-        num=random.randint(0,4)
-        if num%2==0:
-            self.choose_piece_rules[random.randint(0,len(self.choose_piece_rules)-1)].mutate()
-        if num==1 or num==2:
-            self.place_piece_rules[random.randint(0,len(self.place_piece_rules)-1)].mutate()
-        if num>2:
-            self.crossover_rules()
+        #num=random.randint(0,4)
+        #if num%2==0:
+        self.choose_piece_rules[random.randint(0,len(self.choose_piece_rules)-1)].mutate()
+        #if num==1 or num==2:
+        self.place_piece_rules[random.randint(0,len(self.place_piece_rules)-1)].mutate()
+        #if num>2:
+            #self.crossover_rules()
 
     def crossover_rules(self):
         chooseind1,chooseind2=random.randint(0,len(self.choose_piece_rules)-1),random.randint(0,len(self.choose_piece_rules)-1)
@@ -192,4 +194,4 @@ class Genome(quarto.Player):
         return f'\tChoose piece rules :\n{NEWLINE.join([str(rule) for rule in self.choose_piece_rules])} \n\t; Place piece rules :\n{NEWLINE.join([str(rule) for rule in self.place_piece_rules])}'
 
 def generate_rules():
-    return [Rule(True,None) for _ in range(random.randint(9,15))],[Rule(False,None) for _ in range(random.randint(9,15))]
+    return [Rule(True,None) for _ in range(random.randint(MINRULES,MAXRULES))],[Rule(False,None) for _ in range(random.randint(MINRULES,MAXRULES))]

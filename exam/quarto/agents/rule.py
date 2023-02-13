@@ -3,18 +3,23 @@ import agents.quartolib as quartolib
 TRUE_PROPS=['high','solid','square','coloured']
 def isnumber(a):
     return (isinstance(a,int) or isinstance(a,float) or isinstance(a,bool))
+def tonum(a):
+    if isnumber(a):
+        return a
+    else:
+        return 0
 IF_OPERATIONS={
     'mul': (lambda a,b: a*b if isnumber(a) and isnumber(b) else float(a) if isnumber(a) else float(b) if isnumber(b) else 0),
     'add': (lambda a,b: a+b if isnumber(a) and isnumber(b) else float(a) if isnumber(a) else float(b) if isnumber(b) else 0),
     'sub': (lambda a,b: a-b if isnumber(a) and isnumber(b) else float(a) if isnumber(a) else float(b) if isnumber(b) else 0),
     'not': (lambda a,b: not a),
     'or': (lambda a,b: a or b),
-    'truechar':(lambda a,b: a in TRUE_PROPS),
-    'falsechar':(lambda a,b: a not in TRUE_PROPS),
-    'gt':(lambda a,b:str(a)>str(b)),
-    'lt':(lambda a,b:str(a)<str(b)),
-    'gte':(lambda a,b:str(a)>=str(b)),
-    'lte':(lambda a,b:str(a)<=str(b)),
+    #'truechar':(lambda a,b: a in TRUE_PROPS),
+    #'falsechar':(lambda a,b: a not in TRUE_PROPS),
+    'gt':(lambda a,b:tonum(a)>tonum(b)),
+    'lt':(lambda a,b:tonum(a)<tonum(b)),
+    'gte':(lambda a,b:tonum(a)>=tonum(b)),
+    'lte':(lambda a,b:tonum(a)<=tonum(b)),
     'and': (lambda a,b: a and b),
     'eq': (lambda a,b: a==b),
     'ne': (lambda a,b: a!=b)
@@ -57,15 +62,17 @@ THEN_LEAF_PLACE_FUNCTIONS=quartolib.get_then_place_functions()
 THEN_LEAF_CHOOSE_FUNCTIONS=quartolib.get_then_choose_functions()
 
 IF_OPERATIONS_LIST=list(IF_OPERATIONS.keys())
+IF_OPERATIONS_CHOOSE=['not','or','and','ne','eq','ne']#,'truechar','falsechar']
+IF_OPERATIONS_PLACE=['mul','add','sub','not','or','gt','lt','gte','lte','and','eq','ne']
 IF_OPERATIONS_WITH_ONE_OPERAND=set(['not','truechar','falsechar'])
 IF_CHOOSE_FUNCTIONS=quartolib.get_choose_functions()
 IF_PLACE_FUNCTIONS=quartolib.get_place_functions()
-IF_CHOOSE_VALUES=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,True,False]
-IF_PLACE_VALUES=[0,1,2,3,4,True,False]
+IF_PLACE_VALUES=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,True,False]
+IF_CHOOSE_VALUES=['high','not_high','solid','not_solid','coloured','not_coloured','square','not_square',True,False]
 
-IF_POSSIBLE_CHOOSE_VALUES=[[(op,'operation') for op in IF_OPERATIONS_LIST],[(func,'function') for func in IF_CHOOSE_FUNCTIONS],[(val,'value') for val in IF_CHOOSE_VALUES]]
+IF_POSSIBLE_CHOOSE_VALUES=[[(op,'operation') for op in IF_OPERATIONS_CHOOSE],[(func,'function') for func in IF_CHOOSE_FUNCTIONS],[(val,'value') for val in IF_CHOOSE_VALUES]]
 
-IF_POSSIBLE_PLACE_VALUES=[[(op,'operation') for op in IF_OPERATIONS_LIST],[(func,'function') for func in IF_PLACE_FUNCTIONS],[(val,'value') for val in IF_PLACE_VALUES]]
+IF_POSSIBLE_PLACE_VALUES=[[(op,'operation') for op in IF_OPERATIONS_PLACE],[(func,'function') for func in IF_PLACE_FUNCTIONS],[(val,'value') for val in IF_PLACE_VALUES]]
 
 THEN_POSSIBLE_CHOOSE_VALUES=[[(op,'operation') for op in list(THEN_CHOOSE_OPERATIONS.keys())],[(leaf,'leaf') for leaf in THEN_LEAF_CHOOSE_FUNCTIONS]]
 
@@ -96,7 +103,11 @@ class ThenNode:
     def mutate(self):
         if random.random()<0.5 and self.op:
             #mutate one of the childs
-            self.childs[random.randint(0,1)].mutate()
+            num=random.randint(0,2)
+            if num==0 or num==2:
+                self.childs[0].mutate()
+            if num==1 or num==2:
+                self.childs[1].mutate()
         else:
             #mutate myself
             if random.random()<0.5 and self.parent is not None:
@@ -186,7 +197,11 @@ class IfNode:
     def mutate(self):
         if random.random()<0.5 and self.op:
             #mutate one of the childs
-            self.childs[random.randint(0,len(self.childs)-1)].mutate()
+            num=random.randint(0,2)
+            if (num==0 or num==2) or (self.value in IF_OPERATIONS_WITH_ONE_OPERAND):
+                self.childs[0].mutate()
+            if (num==1 or num==2) and (self.value not in IF_OPERATIONS_WITH_ONE_OPERAND):
+                self.childs[1].mutate()
         else:
             #mutate myself
             if random.random()<0.5 and self.parent is not None:
@@ -206,7 +221,7 @@ class IfNode:
                         elif (self.value not in IF_OPERATIONS_WITH_ONE_OPERAND) and (len(self.childs)==1):
                             self.childs.append(IfNode(self,self.choose_piece,self.quarto))
                         num=random.randint(0,6)
-                        if num==0 or num==2:
+                        if num==0 or num==2 or (num==3 and (self.value in IF_OPERATIONS_WITH_ONE_OPERAND)):
                             self.childs[0].mutate()
                         if (num==1 or num==2) and (self.value not in IF_OPERATIONS_WITH_ONE_OPERAND):
                             self.childs[1].mutate()
@@ -234,7 +249,7 @@ class IfNode:
                         elif (self.value not in IF_OPERATIONS_WITH_ONE_OPERAND) and (len(self.childs)==1):
                             self.childs.append(IfNode(self,self.choose_piece,self.quarto))
                         num=random.randint(0,6)
-                        if num==0 or num==2:
+                        if num==0 or num==2 or (num==3 and (self.value in IF_OPERATIONS_WITH_ONE_OPERAND)):
                             self.childs[0].mutate()
                         if (num==1 or num==2) and (self.value not in IF_OPERATIONS_WITH_ONE_OPERAND):
                             self.childs[1].mutate()
@@ -303,8 +318,8 @@ class Rule:
     def evaluate_game_rule(self,won):
         self.rule_true+=self.game_true
         self.rule_evaluations+=self.game_evaluations
-        self.rule_make_sense= True if self.rule_true>0 and self.rule_true!=self.rule_evaluations else False
-        self.action_make_sense=False if self.action_possible==0 else True
+        self.rule_make_sense= self.rule_true>0 and self.rule_true<0.5*self.rule_evaluations
+        self.action_make_sense=self.rule_true>0 and self.action_possible>=(2*(self.rule_true/3))
         self.rule_quality+=((self.game_evaluations-self.game_true)/self.game_evaluations) * 10 if won else -((self.game_true/self.game_evaluations) * 10)
         #self.rule_fitness= 10 * self.rule_quality + 15 * self.rule_true
 
@@ -340,7 +355,7 @@ class Rule:
         self.game_evaluations=0
 
     def needs_evaluation(self):
-        return self.rule_quality==0 or self.rule_true==0 or self.rule_evaluations==0
+        return self.rule_evaluations==0
 
     def action(self):
         return self.then_node.action()

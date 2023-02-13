@@ -348,6 +348,212 @@ def more_different_in_antidiagonal(quarto,a,b):
     aval,bval=sum([k in chars for k in achars]),sum([k in chars for k in bchars])
     return aval>bval
 
+def characteristic_in_most_used_row_not_complete(quarto):
+    board=quarto.get_board_status()
+    placed_pieces=get_placed_pieces(board[most_used_row_not_complete(quarto),:])
+    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
+    for piece in placed_pieces:
+        piece_char=quarto.get_piece_charachteristics(piece)
+        placed_pieces_char['high']+=piece_char.HIGH
+        placed_pieces_char['coloured']+=piece_char.COLOURED
+        placed_pieces_char['solid']+=piece_char.SOLID
+        placed_pieces_char['square']+=piece_char.SQUARE
+        placed_pieces_char['not_high']+=not piece_char.HIGH
+        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
+        placed_pieces_char['not_solid']+=not piece_char.SOLID
+        placed_pieces_char['not_square']+=not piece_char.SQUARE
+    chars=[k for k,v in placed_pieces_char.items() if v==len(placed_pieces)]
+    return chars[0] if len(chars)>0 else 'high'
+
+def characteristic_in_most_used_column_not_complete(quarto):
+    board=quarto.get_board_status()
+    placed_pieces=get_placed_pieces(board[:,most_used_column_not_complete(quarto)])
+    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
+    for piece in placed_pieces:
+        piece_char=quarto.get_piece_charachteristics(piece)
+        placed_pieces_char['high']+=piece_char.HIGH
+        placed_pieces_char['coloured']+=piece_char.COLOURED
+        placed_pieces_char['solid']+=piece_char.SOLID
+        placed_pieces_char['square']+=piece_char.SQUARE
+        placed_pieces_char['not_high']+=not piece_char.HIGH
+        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
+        placed_pieces_char['not_solid']+=not piece_char.SOLID
+        placed_pieces_char['not_square']+=not piece_char.SQUARE
+    chars=[k for k,v in placed_pieces_char.items() if v==len(placed_pieces)]
+    return chars[0] if len(chars)>0 else 'high'
+
+
+def characteristic_in_less_used_column(quarto):
+    board=quarto.get_board_status()
+    placed_pieces=get_placed_pieces(board[:,less_used_column(quarto)])
+    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
+    for piece in placed_pieces:
+        piece_char=quarto.get_piece_charachteristics(piece)
+        placed_pieces_char['high']+=piece_char.HIGH
+        placed_pieces_char['coloured']+=piece_char.COLOURED
+        placed_pieces_char['solid']+=piece_char.SOLID
+        placed_pieces_char['square']+=piece_char.SQUARE
+        placed_pieces_char['not_high']+=not piece_char.HIGH
+        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
+        placed_pieces_char['not_solid']+=not piece_char.SOLID
+        placed_pieces_char['not_square']+=not piece_char.SQUARE
+    chars=[k for k,v in placed_pieces_char.items() if v==len(placed_pieces)]
+    return chars[0] if len(chars)>0 else 'high'
+
+def characteristic_in_less_used_row(quarto):
+    board=quarto.get_board_status()
+    placed_pieces=get_placed_pieces(board[less_used_row(quarto),:])
+    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
+    for piece in placed_pieces:
+        piece_char=quarto.get_piece_charachteristics(piece)
+        placed_pieces_char['high']+=piece_char.HIGH
+        placed_pieces_char['coloured']+=piece_char.COLOURED
+        placed_pieces_char['solid']+=piece_char.SOLID
+        placed_pieces_char['square']+=piece_char.SQUARE
+        placed_pieces_char['not_high']+=not piece_char.HIGH
+        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
+        placed_pieces_char['not_solid']+=not piece_char.SOLID
+        placed_pieces_char['not_square']+=not piece_char.SQUARE
+    chars=[k for k,v in placed_pieces_char.items() if v==len(placed_pieces)]
+    return chars[0] if len(chars)>0 else 'high'
+
+def characteristic_in_diagonal(quarto):
+    board=quarto.get_board_status()
+    placed_pieces=get_placed_pieces(np.diag(board))
+    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
+    for piece in placed_pieces:
+        piece_char=quarto.get_piece_charachteristics(piece)
+        placed_pieces_char['high']+=piece_char.HIGH
+        placed_pieces_char['coloured']+=piece_char.COLOURED
+        placed_pieces_char['solid']+=piece_char.SOLID
+        placed_pieces_char['square']+=piece_char.SQUARE
+        placed_pieces_char['not_high']+=not piece_char.HIGH
+        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
+        placed_pieces_char['not_solid']+=not piece_char.SOLID
+        placed_pieces_char['not_square']+=not piece_char.SQUARE
+    chars=[k for k,v in placed_pieces_char.items() if v==len(placed_pieces)]
+    return chars[0] if len(chars)>0 else 'high'
+
+def characteristic_in_antidiagonal(quarto):
+    board=quarto.get_board_status()
+    placed_pieces=get_placed_pieces(np.fliplr(board).diagonal())
+    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
+    for piece in placed_pieces:
+        piece_char=quarto.get_piece_charachteristics(piece)
+        placed_pieces_char['high']+=piece_char.HIGH
+        placed_pieces_char['coloured']+=piece_char.COLOURED
+        placed_pieces_char['solid']+=piece_char.SOLID
+        placed_pieces_char['square']+=piece_char.SQUARE
+        placed_pieces_char['not_high']+=not piece_char.HIGH
+        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
+        placed_pieces_char['not_solid']+=not piece_char.SOLID
+        placed_pieces_char['not_square']+=not piece_char.SQUARE
+    chars=[k for k,v in placed_pieces_char.items() if v==len(placed_pieces)]
+    return chars[0] if len(chars)>0 else 'high'
+
+def characteristic_not_in_most_used_row_not_complete(quarto):
+    board=quarto.get_board_status()
+    placed_pieces=get_placed_pieces(board[most_used_row_not_complete(quarto),:])
+    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
+    for piece in placed_pieces:
+        piece_char=quarto.get_piece_charachteristics(piece)
+        placed_pieces_char['high']+=piece_char.HIGH
+        placed_pieces_char['coloured']+=piece_char.COLOURED
+        placed_pieces_char['solid']+=piece_char.SOLID
+        placed_pieces_char['square']+=piece_char.SQUARE
+        placed_pieces_char['not_high']+=not piece_char.HIGH
+        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
+        placed_pieces_char['not_solid']+=not piece_char.SOLID
+        placed_pieces_char['not_square']+=not piece_char.SQUARE
+    chars=[k for k,v in placed_pieces_char.items() if v==0]
+    return chars[0] if len(chars)>0 else 'high'
+
+def characteristic_not_in_most_used_column_not_complete(quarto):
+    board=quarto.get_board_status()
+    placed_pieces=get_placed_pieces(board[:,most_used_column_not_complete(quarto)])
+    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
+    for piece in placed_pieces:
+        piece_char=quarto.get_piece_charachteristics(piece)
+        placed_pieces_char['high']+=piece_char.HIGH
+        placed_pieces_char['coloured']+=piece_char.COLOURED
+        placed_pieces_char['solid']+=piece_char.SOLID
+        placed_pieces_char['square']+=piece_char.SQUARE
+        placed_pieces_char['not_high']+=not piece_char.HIGH
+        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
+        placed_pieces_char['not_solid']+=not piece_char.SOLID
+        placed_pieces_char['not_square']+=not piece_char.SQUARE
+    chars=[k for k,v in placed_pieces_char.items() if v==0]
+    return chars[0] if len(chars)>0 else 'high'
+
+
+def characteristic_not_in_less_used_column(quarto):
+    board=quarto.get_board_status()
+    placed_pieces=get_placed_pieces(board[:,less_used_column(quarto)])
+    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
+    for piece in placed_pieces:
+        piece_char=quarto.get_piece_charachteristics(piece)
+        placed_pieces_char['high']+=piece_char.HIGH
+        placed_pieces_char['coloured']+=piece_char.COLOURED
+        placed_pieces_char['solid']+=piece_char.SOLID
+        placed_pieces_char['square']+=piece_char.SQUARE
+        placed_pieces_char['not_high']+=not piece_char.HIGH
+        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
+        placed_pieces_char['not_solid']+=not piece_char.SOLID
+        placed_pieces_char['not_square']+=not piece_char.SQUARE
+    chars=[k for k,v in placed_pieces_char.items() if v==0]
+    return chars[0] if len(chars)>0 else 'high'
+
+def characteristic_not_in_less_used_row(quarto):
+    board=quarto.get_board_status()
+    placed_pieces=get_placed_pieces(board[less_used_row(quarto),:])
+    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
+    for piece in placed_pieces:
+        piece_char=quarto.get_piece_charachteristics(piece)
+        placed_pieces_char['high']+=piece_char.HIGH
+        placed_pieces_char['coloured']+=piece_char.COLOURED
+        placed_pieces_char['solid']+=piece_char.SOLID
+        placed_pieces_char['square']+=piece_char.SQUARE
+        placed_pieces_char['not_high']+=not piece_char.HIGH
+        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
+        placed_pieces_char['not_solid']+=not piece_char.SOLID
+        placed_pieces_char['not_square']+=not piece_char.SQUARE
+    chars=[k for k,v in placed_pieces_char.items() if v==0]
+    return chars[0] if len(chars)>0 else 'high'
+
+def characteristic_not_in_diagonal(quarto):
+    board=quarto.get_board_status()
+    placed_pieces=get_placed_pieces(np.diag(board))
+    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
+    for piece in placed_pieces:
+        piece_char=quarto.get_piece_charachteristics(piece)
+        placed_pieces_char['high']+=piece_char.HIGH
+        placed_pieces_char['coloured']+=piece_char.COLOURED
+        placed_pieces_char['solid']+=piece_char.SOLID
+        placed_pieces_char['square']+=piece_char.SQUARE
+        placed_pieces_char['not_high']+=not piece_char.HIGH
+        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
+        placed_pieces_char['not_solid']+=not piece_char.SOLID
+        placed_pieces_char['not_square']+=not piece_char.SQUARE
+    chars=[k for k,v in placed_pieces_char.items() if v==0]
+    return chars[0] if len(chars)>0 else 'high'
+
+def characteristic_not_in_antidiagonal(quarto):
+    board=quarto.get_board_status()
+    placed_pieces=get_placed_pieces(np.fliplr(board).diagonal())
+    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
+    for piece in placed_pieces:
+        piece_char=quarto.get_piece_charachteristics(piece)
+        placed_pieces_char['high']+=piece_char.HIGH
+        placed_pieces_char['coloured']+=piece_char.COLOURED
+        placed_pieces_char['solid']+=piece_char.SOLID
+        placed_pieces_char['square']+=piece_char.SQUARE
+        placed_pieces_char['not_high']+=not piece_char.HIGH
+        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
+        placed_pieces_char['not_solid']+=not piece_char.SOLID
+        placed_pieces_char['not_square']+=not piece_char.SQUARE
+    chars=[k for k,v in placed_pieces_char.items() if v==0]
+    return chars[0] if len(chars)>0 else 'high'
+
 def get_then_place_functions():
     return [element_in_less_used_row,element_in_less_used_column,element_in_most_used_row_not_complete,element_in_most_used_column_not_complete,element_inside,element_in_diagonal,element_in_antidiagonal,element_in_corner]
 
@@ -355,9 +561,13 @@ def get_then_choose_functions():
     return [high_piece,not_high_piece,solid_piece,not_solid_piece,coloured_piece,not_coloured_piece,square_piece,not_square_piece]
 
 def get_choose_functions():
-    return [num_elements_in_diagonal,num_elements_in_antidiagonal,num_pieces_in_less_used_column,num_pieces_in_less_used_row,num_pieces_in_most_used_column,
-        num_pieces_in_most_used_row,num_pieces_in_most_used_column_not_complete,num_pieces_in_most_used_row_not_complete,
-        num_pieces_chosen,num_pieces_left,less_used_characteristic,most_used_characteristic]
+    return [#num_elements_in_diagonal,num_elements_in_antidiagonal,num_pieces_in_less_used_column,num_pieces_in_less_used_row,num_pieces_in_most_used_column,
+        #num_pieces_in_most_used_row,num_pieces_in_most_used_column_not_complete,num_pieces_in_most_used_row_not_complete,
+        #num_pieces_chosen,num_pieces_left,
+        less_used_characteristic,most_used_characteristic,characteristic_in_most_used_row_not_complete,characteristic_in_diagonal,
+        characteristic_in_most_used_column_not_complete,characteristic_in_antidiagonal,characteristic_not_in_most_used_row_not_complete,characteristic_not_in_diagonal,
+        characteristic_not_in_most_used_column_not_complete,characteristic_not_in_antidiagonal,characteristic_in_less_used_column,characteristic_in_less_used_row,
+        characteristic_not_in_less_used_column,characteristic_not_in_less_used_row]
 
 def get_place_functions():
     return [num_elements_in_diagonal,num_elements_in_antidiagonal,num_pieces_in_less_used_column,num_pieces_in_less_used_row,num_pieces_in_most_used_column,
