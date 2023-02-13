@@ -16,7 +16,7 @@ class Player(object):
         pass
 
     @abstractmethod
-    def place_piece(self) -> tuple[int, int]:
+    def place_piece(self) -> tuple:
         pass
 
     def get_game(self):
@@ -67,7 +67,7 @@ class Quarto(object):
         self._current_player = 0
         self.__selected_piece_index = -1
 
-    def set_players(self, players: tuple[Player, Player]):
+    def set_players(self, players: tuple):
         self.__players = players
 
     def get_current_player(self) -> int:

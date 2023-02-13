@@ -17,7 +17,7 @@ class RandomPlayer(quarto.Player):
     def choose_piece(self) -> int:
         return random.randint(0, 15)
 
-    def place_piece(self) -> tuple[int, int]:
+    def place_piece(self) -> tuple:
         return random.randint(0, 3), random.randint(0, 3)
 
 class Genome(quarto.Player):
@@ -141,7 +141,6 @@ class Genome(quarto.Player):
                 #count+=1
                 #if count==10:
 
-        self.choose_piece_rules=sorted(self.choose_piece_rules,key=lambda a: a.rule_quality,reverse=True)  
         self.evaluating_choose_piece_rules=self.choose_piece_rules
         
         for i in range(len(self.place_piece_rules)):
@@ -170,6 +169,7 @@ class Genome(quarto.Player):
 
         self.evaluating=False
         #updated priority of rules, checking first the rules less probable to be true
+        self.choose_piece_rules=sorted(self.choose_piece_rules,key=lambda a: a.rule_quality,reverse=True)  
         self.place_piece_rules=sorted(self.place_piece_rules,key=lambda a: a.rule_quality,reverse=True)
         #now evaluate whole genome
         self.evaluating_genome=True

@@ -297,7 +297,7 @@ class Rule:
         self.rule_evaluations+=self.game_evaluations
         self.rule_make_sense= True if self.rule_true>0 and self.rule_true!=self.rule_evaluations else False
         self.action_make_sense=False if self.action_possible==0 else True
-        self.rule_quality+=(1 if won else -1) * ((self.game_evaluations-self.game_true)/self.game_evaluations)
+        self.rule_quality+=((self.game_evaluations-self.game_true)/self.game_evaluations) * 10 if won else -((self.game_true/self.game_evaluations) * 10)
         #self.rule_fitness= 10 * self.rule_quality + 15 * self.rule_true
 
     def mutate(self,rule_make_sense=True,action_possible=True):

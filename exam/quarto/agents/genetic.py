@@ -122,5 +122,5 @@ class GeneticProg(quarto.Player):
     def choose_piece(self) -> int:
         return self.player.choose_piece()
 
-    def place_piece(self) -> tuple[int, int]:
+    def place_piece(self) -> tuple:
         return self.player.place_piece()

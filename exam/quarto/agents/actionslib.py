@@ -5,7 +5,7 @@ import copy
 def random_choose(quarto) -> int:
     return random.randint(0, 15)
 
-def random_place(quarto) -> tuple[int, int]:
+def random_place(quarto) -> tuple:
     return random.randint(0, 3), random.randint(0, 3)
 
 def pick_piece_with_char(quarto,characteristic,possible_pieces):
@@ -130,31 +130,31 @@ def choose_piece_with_less_true_chars(quarto) -> int:
     #print(f'Placed pieces {placed_pieces} free pieces {free_pieces} chars {placed_pieces_char} min char {minchar}')
     return minpiece
 
-def place_less_used_row(quarto) -> tuple[int, int]:
+def place_less_used_row(quarto) -> tuple:
     return random.randint(0, 3), less_used_row(quarto)
 
-def place_most_used_row(quarto) -> tuple[int, int]:
+def place_most_used_row(quarto) -> tuple:
     return random.randint(0, 3), most_used_row_not_complete(quarto)
 
-def place_less_used_column(quarto) -> tuple[int, int]:
+def place_less_used_column(quarto) -> tuple:
     return less_used_column(quarto), random.randint(0, 3)
 
-def place_most_used_column(quarto) -> tuple[int, int]:
+def place_most_used_column(quarto) -> tuple:
     return most_used_column_not_complete(quarto), random.randint(0, 3)
 
-def place_less_used_row_less_used_column(quarto) -> tuple[int, int]:
+def place_less_used_row_less_used_column(quarto) -> tuple:
     return less_used_column(quarto), less_used_row(quarto)
 
-def place_less_used_row_most_used_column(quarto) -> tuple[int, int]:
+def place_less_used_row_most_used_column(quarto) -> tuple:
     return most_used_column_not_complete(quarto), less_used_row(quarto)
 
-def place_most_used_row_less_used_column(quarto) -> tuple[int, int]:
+def place_most_used_row_less_used_column(quarto) -> tuple:
     return less_used_column(quarto), most_used_row_not_complete(quarto)
 
-def place_most_used_row_most_used_column(quarto) -> tuple[int, int]:
+def place_most_used_row_most_used_column(quarto) -> tuple:
     return most_used_column_not_complete(quarto), most_used_row_not_complete(quarto)
 
-def place_at_diagonal_if_available(quarto) -> tuple[int,int]:
+def place_at_diagonal_if_available(quarto) -> tuple:
     possible_placements=[(a[1],a[0]) for a in np.argwhere(quarto.get_board_status()==-1).tolist()]
     possible_diagonal_placements=[p for p in possible_placements if p[0]==p[1]]
     if len(possible_diagonal_placements)>0:
@@ -162,7 +162,7 @@ def place_at_diagonal_if_available(quarto) -> tuple[int,int]:
     else:
         return random.choice(possible_placements)
 
-def place_at_antidiagonal_if_available(quarto) -> tuple[int,int]:
+def place_at_antidiagonal_if_available(quarto) -> tuple:
     possible_placements=[(a[1],a[0]) for a in np.argwhere(quarto.get_board_status()==-1).tolist()]
     possible_antidiagonal_placements=[p for p in possible_placements if p[0]+p[1]==NUMROWS-1]
     if len(possible_antidiagonal_placements)>0:
@@ -170,7 +170,7 @@ def place_at_antidiagonal_if_available(quarto) -> tuple[int,int]:
     else:
         return random.choice(possible_placements)
 
-def place_at_corner_if_available(quarto) -> tuple[int,int]:
+def place_at_corner_if_available(quarto) -> tuple:
     possible_placements=[(a[1],a[0]) for a in np.argwhere(quarto.get_board_status()==-1).tolist()]
     possible_corner_placements=[p for p in possible_placements if p[0]==0 or p[0]==NUMCOLUMNS-1 or p[1]==0 or p[1]==NUMROWS-1]
     if len(possible_corner_placements)>0:
@@ -178,7 +178,7 @@ def place_at_corner_if_available(quarto) -> tuple[int,int]:
     else:
         return random.choice(possible_placements)
 
-def place_inside_if_available(quarto) -> tuple[int,int]:
+def place_inside_if_available(quarto) -> tuple:
     possible_placements=[(a[1],a[0]) for a in np.argwhere(quarto.get_board_status()==-1).tolist()]
     possible_inside_placements=[p for p in possible_placements if p[0]!=0 and p[0]!=NUMCOLUMNS-1 or p[1]!=0 and p[1]==NUMROWS-1]
     if len(possible_inside_placements)>0:
@@ -186,7 +186,7 @@ def place_inside_if_available(quarto) -> tuple[int,int]:
     else:
         return random.choice(possible_placements)
 
-def place_not_at_diagonal_if_available(quarto) -> tuple[int,int]:
+def place_not_at_diagonal_if_available(quarto) -> tuple:
     possible_placements=[(a[1],a[0]) for a in np.argwhere(quarto.get_board_status()==-1).tolist()]
     possible_notdiagonal_placements=[p for p in possible_placements if p[0]!=p[1]]
     if len(possible_notdiagonal_placements)>0:
@@ -194,7 +194,7 @@ def place_not_at_diagonal_if_available(quarto) -> tuple[int,int]:
     else:
         return random.choice(possible_placements)
 
-def place_not_at_antidiagonal_if_available(quarto) -> tuple[int,int]:
+def place_not_at_antidiagonal_if_available(quarto) -> tuple:
     possible_placements=[(a[1],a[0]) for a in np.argwhere(quarto.get_board_status()==-1).tolist()]
     possible_notantidiagonal_placements=[p for p in possible_placements if p[0]+p[1]!=NUMROWS-1]
     if len(possible_notantidiagonal_placements)>0:
