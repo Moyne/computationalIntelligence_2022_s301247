@@ -1,8 +1,12 @@
 import random
 import agents.quartolib as quartolib
 TRUE_PROPS=['high','solid','square','coloured']
+def isnumber(a):
+    return (isinstance(a,int) or isinstance(a,float) or isinstance(a,bool))
 IF_OPERATIONS={
-    'mul': (lambda a,b: a+b if type(a)==type(b) and isinstance(a,str) else a*b),
+    'mul': (lambda a,b: a*b if isnumber(a) and isnumber(b) else float(a) if isnumber(a) else float(b) if isnumber(b) else 0),
+    'add': (lambda a,b: a+b if isnumber(a) and isnumber(b) else float(a) if isnumber(a) else float(b) if isnumber(b) else 0),
+    'sub': (lambda a,b: a-b if isnumber(a) and isnumber(b) else float(a) if isnumber(a) else float(b) if isnumber(b) else 0),
     'not': (lambda a,b: not a),
     'or': (lambda a,b: a or b),
     'truechar':(lambda a,b: a in TRUE_PROPS),
