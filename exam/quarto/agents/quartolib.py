@@ -191,12 +191,12 @@ def compare_elements_in_rows(quarto,a,b):
 def compare_elements_in_diag(quarto,a,b):
     board=quarto.get_board_status()
     ela,elb=np.count_nonzero(np.diagonal(board,a[0]-a[1])!=-1),np.count_nonzero(np.diagonal(board,b[0]-b[1])!=-1)
-    return True if ela>elb else False
+    return ela>elb
 
 def compare_elements_in_antidiag(quarto,a,b):
     board=quarto.get_board_status()
     ela,elb=np.count_nonzero(np.diagonal(np.fliplr(board),a[0]-a[1])!=-1),np.count_nonzero(np.diagonal(np.fliplr(board),b[0]-b[1])!=-1)
-    return True if ela>elb else False
+    return ela>elb
 
 def compare_uniqueness(quarto,a,b):
     apiece,bpiece=quarto.get_piece_charachteristics(a),quarto.get_piece_charachteristics(b)
@@ -215,8 +215,138 @@ def compare_uniqueness(quarto,a,b):
         placed_pieces_char['not_square']+=not piece_char.SQUARE
     aval=placed_pieces_char['high' if apiece.HIGH else 'not_high'] + placed_pieces_char['coloured' if apiece.COLOURED else 'not_coloured'] + placed_pieces_char['solid' if apiece.SOLID else 'not_solid'] +placed_pieces_char['square' if apiece.SQUARE else 'not_square']
     bval=placed_pieces_char['high' if bpiece.HIGH else 'not_high'] + placed_pieces_char['coloured' if bpiece.COLOURED else 'not_coloured'] + placed_pieces_char['solid' if bpiece.SOLID else 'not_solid'] +placed_pieces_char['square' if bpiece.SQUARE else 'not_square']
-    return True if aval>bval else False
+    return aval>bval
 
+
+def compare_trues(quarto,a,b):
+    apiece,bpiece=quarto.get_piece_charachteristics(a),quarto.get_piece_charachteristics(b)
+    return apiece.HIGH+apiece.COLOURED+apiece.SOLID+apiece.SQUARE>bpiece.HIGH+bpiece.COLOURED+bpiece.SOLID+bpiece.SQUARE
+
+def more_different_in_most_used_row_not_complete(quarto,a,b):
+    apiece,bpiece=quarto.get_piece_charachteristics(a),quarto.get_piece_charachteristics(b)
+    board=quarto.get_board_status()
+    placed_pieces=get_placed_pieces(board[most_used_row_not_complete(quarto),:])
+    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
+    for piece in placed_pieces:
+        piece_char=quarto.get_piece_charachteristics(piece)
+        placed_pieces_char['high']+=piece_char.HIGH
+        placed_pieces_char['coloured']+=piece_char.COLOURED
+        placed_pieces_char['solid']+=piece_char.SOLID
+        placed_pieces_char['square']+=piece_char.SQUARE
+        placed_pieces_char['not_high']+=not piece_char.HIGH
+        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
+        placed_pieces_char['not_solid']+=not piece_char.SOLID
+        placed_pieces_char['not_square']+=not piece_char.SQUARE
+    chars=[k for k,v in placed_pieces_char.items() if v==len(placed_pieces)]
+    achars=[k for k,v in {'high':apiece.HIGH,'not_high':not apiece.HIGH,'coloured':apiece.COLOURED,'not_coloured':not apiece.COLOURED,'solid':apiece.SOLID,'not_solid':not apiece.SOLID,'square':apiece.SQUARE,'not_square':not apiece.SQUARE}.items() if v]
+    bchars=[k for k,v in {'high':bpiece.HIGH,'not_high':not bpiece.HIGH,'coloured':bpiece.COLOURED,'not_coloured':not bpiece.COLOURED,'solid':bpiece.SOLID,'not_solid':not bpiece.SOLID,'square':bpiece.SQUARE,'not_square':not bpiece.SQUARE}.items() if v]
+    aval,bval=sum([k in chars for k in achars]),sum([k in chars for k in bchars])
+    return aval>bval
+
+def more_different_in_most_used_column_not_complete(quarto,a,b):
+    apiece,bpiece=quarto.get_piece_charachteristics(a),quarto.get_piece_charachteristics(b)
+    board=quarto.get_board_status()
+    placed_pieces=get_placed_pieces(board[:,most_used_column_not_complete(quarto)])
+    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
+    for piece in placed_pieces:
+        piece_char=quarto.get_piece_charachteristics(piece)
+        placed_pieces_char['high']+=piece_char.HIGH
+        placed_pieces_char['coloured']+=piece_char.COLOURED
+        placed_pieces_char['solid']+=piece_char.SOLID
+        placed_pieces_char['square']+=piece_char.SQUARE
+        placed_pieces_char['not_high']+=not piece_char.HIGH
+        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
+        placed_pieces_char['not_solid']+=not piece_char.SOLID
+        placed_pieces_char['not_square']+=not piece_char.SQUARE
+    chars=[k for k,v in placed_pieces_char.items() if v==len(placed_pieces)]
+    achars=[k for k,v in {'high':apiece.HIGH,'not_high':not apiece.HIGH,'coloured':apiece.COLOURED,'not_coloured':not apiece.COLOURED,'solid':apiece.SOLID,'not_solid':not apiece.SOLID,'square':apiece.SQUARE,'not_square':not apiece.SQUARE}.items() if v]
+    bchars=[k for k,v in {'high':bpiece.HIGH,'not_high':not bpiece.HIGH,'coloured':bpiece.COLOURED,'not_coloured':not bpiece.COLOURED,'solid':bpiece.SOLID,'not_solid':not bpiece.SOLID,'square':bpiece.SQUARE,'not_square':not bpiece.SQUARE}.items() if v]
+    aval,bval=sum([k in chars for k in achars]),sum([k in chars for k in bchars])
+    return aval>bval
+    
+def more_different_in_less_used_row(quarto,a,b):
+    apiece,bpiece=quarto.get_piece_charachteristics(a),quarto.get_piece_charachteristics(b)
+    board=quarto.get_board_status()
+    placed_pieces=get_placed_pieces(board[less_used_row(quarto),:])
+    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
+    for piece in placed_pieces:
+        piece_char=quarto.get_piece_charachteristics(piece)
+        placed_pieces_char['high']+=piece_char.HIGH
+        placed_pieces_char['coloured']+=piece_char.COLOURED
+        placed_pieces_char['solid']+=piece_char.SOLID
+        placed_pieces_char['square']+=piece_char.SQUARE
+        placed_pieces_char['not_high']+=not piece_char.HIGH
+        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
+        placed_pieces_char['not_solid']+=not piece_char.SOLID
+        placed_pieces_char['not_square']+=not piece_char.SQUARE
+    chars=[k for k,v in placed_pieces_char.items() if v==len(placed_pieces)]
+    achars=[k for k,v in {'high':apiece.HIGH,'not_high':not apiece.HIGH,'coloured':apiece.COLOURED,'not_coloured':not apiece.COLOURED,'solid':apiece.SOLID,'not_solid':not apiece.SOLID,'square':apiece.SQUARE,'not_square':not apiece.SQUARE}.items() if v]
+    bchars=[k for k,v in {'high':bpiece.HIGH,'not_high':not bpiece.HIGH,'coloured':bpiece.COLOURED,'not_coloured':not bpiece.COLOURED,'solid':bpiece.SOLID,'not_solid':not bpiece.SOLID,'square':bpiece.SQUARE,'not_square':not bpiece.SQUARE}.items() if v]
+    aval,bval=sum([k in chars for k in achars]),sum([k in chars for k in bchars])
+    return aval>bval
+
+def more_different_in_less_used_column(quarto,a,b):
+    apiece,bpiece=quarto.get_piece_charachteristics(a),quarto.get_piece_charachteristics(b)
+    board=quarto.get_board_status()
+    placed_pieces=get_placed_pieces(board[:,less_used_column(quarto)])
+    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
+    for piece in placed_pieces:
+        piece_char=quarto.get_piece_charachteristics(piece)
+        placed_pieces_char['high']+=piece_char.HIGH
+        placed_pieces_char['coloured']+=piece_char.COLOURED
+        placed_pieces_char['solid']+=piece_char.SOLID
+        placed_pieces_char['square']+=piece_char.SQUARE
+        placed_pieces_char['not_high']+=not piece_char.HIGH
+        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
+        placed_pieces_char['not_solid']+=not piece_char.SOLID
+        placed_pieces_char['not_square']+=not piece_char.SQUARE
+    chars=[k for k,v in placed_pieces_char.items() if v==len(placed_pieces)]
+    achars=[k for k,v in {'high':apiece.HIGH,'not_high':not apiece.HIGH,'coloured':apiece.COLOURED,'not_coloured':not apiece.COLOURED,'solid':apiece.SOLID,'not_solid':not apiece.SOLID,'square':apiece.SQUARE,'not_square':not apiece.SQUARE}.items() if v]
+    bchars=[k for k,v in {'high':bpiece.HIGH,'not_high':not bpiece.HIGH,'coloured':bpiece.COLOURED,'not_coloured':not bpiece.COLOURED,'solid':bpiece.SOLID,'not_solid':not bpiece.SOLID,'square':bpiece.SQUARE,'not_square':not bpiece.SQUARE}.items() if v]
+    aval,bval=sum([k in chars for k in achars]),sum([k in chars for k in bchars])
+    return aval>bval
+
+def more_different_in_diagonal(quarto,a,b):
+    apiece,bpiece=quarto.get_piece_charachteristics(a),quarto.get_piece_charachteristics(b)
+    board=quarto.get_board_status()
+    placed_pieces=get_placed_pieces(np.diag(board))
+    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
+    for piece in placed_pieces:
+        piece_char=quarto.get_piece_charachteristics(piece)
+        placed_pieces_char['high']+=piece_char.HIGH
+        placed_pieces_char['coloured']+=piece_char.COLOURED
+        placed_pieces_char['solid']+=piece_char.SOLID
+        placed_pieces_char['square']+=piece_char.SQUARE
+        placed_pieces_char['not_high']+=not piece_char.HIGH
+        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
+        placed_pieces_char['not_solid']+=not piece_char.SOLID
+        placed_pieces_char['not_square']+=not piece_char.SQUARE
+    chars=[k for k,v in placed_pieces_char.items() if v==len(placed_pieces)]
+    achars=[k for k,v in {'high':apiece.HIGH,'not_high':not apiece.HIGH,'coloured':apiece.COLOURED,'not_coloured':not apiece.COLOURED,'solid':apiece.SOLID,'not_solid':not apiece.SOLID,'square':apiece.SQUARE,'not_square':not apiece.SQUARE}.items() if v]
+    bchars=[k for k,v in {'high':bpiece.HIGH,'not_high':not bpiece.HIGH,'coloured':bpiece.COLOURED,'not_coloured':not bpiece.COLOURED,'solid':bpiece.SOLID,'not_solid':not bpiece.SOLID,'square':bpiece.SQUARE,'not_square':not bpiece.SQUARE}.items() if v]
+    aval,bval=sum([k in chars for k in achars]),sum([k in chars for k in bchars])
+    return aval>bval
+
+def more_different_in_antidiagonal(quarto,a,b):
+    apiece,bpiece=quarto.get_piece_charachteristics(a),quarto.get_piece_charachteristics(b)
+    board=quarto.get_board_status()
+    placed_pieces=get_placed_pieces(np.fliplr(board).diagonal())
+    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
+    for piece in placed_pieces:
+        piece_char=quarto.get_piece_charachteristics(piece)
+        placed_pieces_char['high']+=piece_char.HIGH
+        placed_pieces_char['coloured']+=piece_char.COLOURED
+        placed_pieces_char['solid']+=piece_char.SOLID
+        placed_pieces_char['square']+=piece_char.SQUARE
+        placed_pieces_char['not_high']+=not piece_char.HIGH
+        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
+        placed_pieces_char['not_solid']+=not piece_char.SOLID
+        placed_pieces_char['not_square']+=not piece_char.SQUARE
+    chars=[k for k,v in placed_pieces_char.items() if v==len(placed_pieces)]
+    achars=[k for k,v in {'high':apiece.HIGH,'not_high':not apiece.HIGH,'coloured':apiece.COLOURED,'not_coloured':not apiece.COLOURED,'solid':apiece.SOLID,'not_solid':not apiece.SOLID,'square':apiece.SQUARE,'not_square':not apiece.SQUARE}.items() if v]
+    bchars=[k for k,v in {'high':bpiece.HIGH,'not_high':not bpiece.HIGH,'coloured':bpiece.COLOURED,'not_coloured':not bpiece.COLOURED,'solid':bpiece.SOLID,'not_solid':not bpiece.SOLID,'square':bpiece.SQUARE,'not_square':not bpiece.SQUARE}.items() if v]
+    aval,bval=sum([k in chars for k in achars]),sum([k in chars for k in bchars])
+    return aval>bval
 
 def get_then_place_functions():
     return [element_in_less_used_row,element_in_less_used_column,element_in_most_used_row_not_complete,element_in_most_used_column_not_complete,element_inside,element_in_diagonal,element_in_antidiagonal,element_in_corner]

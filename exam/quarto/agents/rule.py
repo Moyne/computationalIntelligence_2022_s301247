@@ -1,10 +1,16 @@
 import random
 import agents.quartolib as quartolib
-
+TRUE_PROPS=['high','solid','square','coloured']
 IF_OPERATIONS={
     'mul': (lambda a,b: a+b if type(a)==type(b) and isinstance(a,str) else a*b),
     'not': (lambda a,b: not a),
     'or': (lambda a,b: a or b),
+    'truechar':(lambda a,b: a in TRUE_PROPS),
+    'falsechar':(lambda a,b: a not in TRUE_PROPS),
+    'gt':(lambda a,b:str(a)>str(b)),
+    'lt':(lambda a,b:str(a)<str(b)),
+    'gte':(lambda a,b:str(a)>=str(b)),
+    'lte':(lambda a,b:str(a)<=str(b)),
     'and': (lambda a,b: a and b),
     'eq': (lambda a,b: a==b),
     'ne': (lambda a,b: a!=b)
@@ -25,6 +31,20 @@ THEN_PLACE_OPERATIONS={
 THEN_CHOOSE_OPERATIONS={
     'moreunique': (lambda quarto,a,b: a if quartolib.compare_uniqueness(quarto,a,b) else b),
     'lessunique': (lambda quarto,a,b: b if quartolib.compare_uniqueness(quarto,a,b) else a),
+    'trues': (lambda quarto,a,b: a if quartolib.compare_trues(quarto,a,b) else b),
+    'falses': (lambda quarto,a,b: b if quartolib.compare_trues(quarto,a,b) else a),
+    'diffinmostusedrownotcomplete': (lambda quarto,a,b: a if quartolib.more_different_in_most_used_row_not_complete(quarto,a,b) else b),
+    'similarinmostusedrownotcomplete': (lambda quarto,a,b: b if quartolib.more_different_in_most_used_row_not_complete(quarto,a,b) else a),
+    'diffinmostusedcolnotcomplete': (lambda quarto,a,b: a if quartolib.more_different_in_most_used_column_not_complete(quarto,a,b) else b),
+    'similarinmostusedcolumnnotcomplete': (lambda quarto,a,b: b if quartolib.more_different_in_most_used_column_not_complete(quarto,a,b) else a),
+    'diffinlessusedrownotcomplete': (lambda quarto,a,b: a if quartolib.more_different_in_less_used_row(quarto,a,b) else b),
+    'similarinlessusedrownotcomplete': (lambda quarto,a,b: b if quartolib.more_different_in_less_used_row(quarto,a,b) else a),
+    'diffinlessusedcolnotcomplete': (lambda quarto,a,b: a if quartolib.more_different_in_less_used_column(quarto,a,b) else b),
+    'similarinlessusedcolumnnotcomplete': (lambda quarto,a,b: b if quartolib.more_different_in_less_used_column(quarto,a,b) else a),
+    'differentdiag': (lambda quarto,a,b: a if quartolib.more_different_in_diagonal(quarto,a,b) else b),
+    'similardiag': (lambda quarto,a,b: b if quartolib.more_different_in_diagonal(quarto,a,b) else a),
+    'differentantidiag': (lambda quarto,a,b: a if quartolib.more_different_in_antidiagonal(quarto,a,b) else b),
+    'similardiag': (lambda quarto,a,b: b if quartolib.more_different_in_antidiagonal(quarto,a,b) else a),
     'possible': (lambda quarto,a,b: a if quartolib.choose_possible(quarto,a,b) else b)
 }
 
@@ -33,7 +53,7 @@ THEN_LEAF_PLACE_FUNCTIONS=quartolib.get_then_place_functions()
 THEN_LEAF_CHOOSE_FUNCTIONS=quartolib.get_then_choose_functions()
 
 IF_OPERATIONS_LIST=list(IF_OPERATIONS.keys())
-IF_OPERATIONS_WITH_ONE_OPERAND=set(['not'])
+IF_OPERATIONS_WITH_ONE_OPERAND=set(['not','truechar','falsechar'])
 IF_CHOOSE_FUNCTIONS=quartolib.get_choose_functions()
 IF_PLACE_FUNCTIONS=quartolib.get_place_functions()
 IF_CHOOSE_VALUES=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,True,False]
@@ -57,6 +77,8 @@ class ThenNode:
         self.childs=[]
         self.depth=0 if self.parent is None else self.parent.depth+1
         value=random.choice(THEN_POSSIBLE_CHOOSE_VALUES[0 if self.parent is None else random.choice([0,1,1]) if self.depth<RECURSION_MAX_DEPTH else 1] if self.choose_piece else THEN_POSSIBLE_PLACE_VALUES[0 if self.parent is None else random.choice([0,1,1]) if self.depth<RECURSION_MAX_DEPTH else 1])
+        if self.parent is None:
+            value=('possible','operation')
         self.value=value[0]
         self.op=value[1]=='operation'
         self.leaf=value[1]=='leaf'
@@ -81,10 +103,16 @@ class ThenNode:
                 self.leaf=value[1]=='leaf'
                 if self.op:
                     self.optdict=THEN_CHOOSE_OPERATIONS if self.choose_piece else THEN_PLACE_OPERATIONS
-                    if random.random()<0.5 or len(self.childs)!=2:
+                    if random.random()<1/3 or len(self.childs)!=2:
                         self.childs=[]
                         self.childs.append(ThenNode(self,self.choose_piece,self.quarto))
                         self.childs.append(ThenNode(self,self.choose_piece,self.quarto))
+                    elif len(self.childs)==2:
+                        num=random.randint(0,6)
+                        if num==0 or num==2:
+                            self.childs[0].mutate()
+                        if num==1 or num==2:
+                            self.childs[1].mutate()
                 else:
                     self.childs=[]
             else:
@@ -95,10 +123,17 @@ class ThenNode:
                 self.leaf=value[1]=='leaf'
                 if self.op:
                     self.optdict=THEN_CHOOSE_OPERATIONS if self.choose_piece else THEN_PLACE_OPERATIONS
-                    if random.random()<0.5:
+                    if random.random()<1/3:
                         self.childs=[]
                         self.childs.append(ThenNode(self,self.choose_piece,self.quarto))
                         self.childs.append(ThenNode(self,self.choose_piece,self.quarto))
+                    else:
+                        num=random.randint(0,6)
+                        if num==0 or num==2:
+                            self.childs[0].mutate()
+                        if num==1 or num==2:
+                            self.childs[1].mutate()
+                        
                 else:
                     self.childs=[]
 
@@ -159,11 +194,16 @@ class IfNode:
                 self.val=value[1]=='value'
                 if self.op:
                     #print(f'Need a child or two')
-                    if random.random()<0.5 and len(self.childs)>0:
+                    if random.random()<1/3 and len(self.childs)>0:
                         #keep old childs
                         if self.op in IF_OPERATIONS_WITH_ONE_OPERAND and len(self.childs)==2:
                             #remove one of the two childs in case
                             self.childs.pop(random.randint(0,len(self.childs)-1))
+                        num=random.randint(0,6)
+                        if num==0 or num==2:
+                            self.childs[0].mutate()
+                        if num==1 or num==2 and self.op not in IF_OPERATIONS_WITH_ONE_OPERAND:
+                            self.childs[1].mutate()
                     else:
                         self.childs=[]
                         self.childs.append(IfNode(self,self.choose_piece,self.quarto))
@@ -180,11 +220,16 @@ class IfNode:
                 self.val=value[1]=='value'
                 if self.op:
                     #print(f'Need a child or two')
-                    if random.random()<0.5 and len(self.childs)>0:
+                    if random.random()<1/3 and len(self.childs)>0:
                         #keep old childs
                         if self.op in IF_OPERATIONS_WITH_ONE_OPERAND and len(self.childs)==2:
                             #remove one of the two childs in case
                             self.childs.pop(random.randint(0,len(self.childs)-1))
+                        num=random.randint(0,6)
+                        if num==0 or num==2:
+                            self.childs[0].mutate()
+                        if num==1 or num==2 and self.op not in IF_OPERATIONS_WITH_ONE_OPERAND:
+                            self.childs[1].mutate()
                     else:
                         self.childs=[]
                         self.childs.append(IfNode(self,self.choose_piece,self.quarto))
@@ -248,11 +293,11 @@ class Rule:
         return self.if_node.eval()
 
     def evaluate_game_rule(self,won):
-        self.rule_quality+=(1 if won else -1) * (self.game_true/self.game_evaluations)
         self.rule_true+=self.game_true
         self.rule_evaluations+=self.game_evaluations
         self.rule_make_sense= True if self.rule_true>0 and self.rule_true!=self.rule_evaluations else False
         self.action_make_sense=False if self.action_possible==0 else True
+        self.rule_quality+=(1 if won else -1) * ((self.game_evaluations-self.game_true)/self.game_evaluations)
         #self.rule_fitness= 10 * self.rule_quality + 15 * self.rule_true
 
     def mutate(self,rule_make_sense=True,action_possible=True):
@@ -262,6 +307,8 @@ class Rule:
         else:
             #mutate if tree
             self.if_node.mutate()
+        #self.if_node.mutate()
+        #self.then_node.mutate()
         #reset values
         self.reset_evaluation_stats()
 
@@ -291,4 +338,4 @@ class Rule:
         return self.then_node.action()
 
     def __str__(self):
-        return f'Rule: if {str(self.if_node)} ---> action {self.then_node}'
+        return f'Rule: if {str(self.if_node)} ---> action {self.then_node} ::= rule quality {self.rule_quality}'

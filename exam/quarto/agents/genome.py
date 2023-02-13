@@ -24,8 +24,8 @@ class Genome(quarto.Player):
     def __init__(self,quarto: quarto.Quarto,choose_piece_rules=None,place_piece_rules=None) -> None:
         super().__init__(quarto)
         self.quarto=quarto
-        self.choose_piece_rules=copy.deepcopy(choose_piece_rules) if choose_piece_rules is not None else [Rule(True,None) for _ in range(random.randint(10,15))]
-        self.place_piece_rules=copy.deepcopy(place_piece_rules) if place_piece_rules is not None else [Rule(False,None) for _ in range(random.randint(10,15))]
+        self.choose_piece_rules=copy.deepcopy(choose_piece_rules) if choose_piece_rules is not None else [Rule(True,None) for _ in range(random.randint(5,9))]
+        self.place_piece_rules=copy.deepcopy(place_piece_rules) if place_piece_rules is not None else [Rule(False,None) for _ in range(random.randint(5,9))]
         self.evaluating_choose_piece_rules=self.choose_piece_rules
         self.evaluating_place_piece_rules=self.place_piece_rules
         self.fitness=0
@@ -91,10 +91,27 @@ class Genome(quarto.Player):
         return random_place(self.quarto)
     
     def mutate(self):
-        self.choose_piece_rules[random.randint(0,len(self.choose_piece_rules)-1)].mutate()
-        self.place_piece_rules[random.randint(0,len(self.place_piece_rules)-1)].mutate()
+        num=random.randint(0,4)
+        if num%2==0:
+            self.choose_piece_rules[random.randint(0,len(self.choose_piece_rules)-1)].mutate()
+        if num==1 or num==2:
+            self.place_piece_rules[random.randint(0,len(self.place_piece_rules)-1)].mutate()
+        if num>2:
+            self.crossover_rules()
 
-    
+    def crossover_rules(self):
+        chooseind1,chooseind2=random.randint(0,len(self.choose_piece_rules)-1),random.randint(0,len(self.choose_piece_rules)-1)
+        placeind1,placeind2=random.randint(0,len(self.place_piece_rules)-1),random.randint(0,len(self.place_piece_rules)-1)
+        choose_then_node,place_then_node=self.choose_piece_rules[chooseind1].then_node,self.place_piece_rules[placeind1].then_node
+        self.choose_piece_rules[chooseind1].then_node=self.choose_piece_rules[chooseind2].then_node
+        self.choose_piece_rules[chooseind1].then_node=choose_then_node
+        self.place_piece_rules[placeind1].then_node=self.place_piece_rules[placeind2].then_node
+        self.place_piece_rules[placeind2].then_node=place_then_node
+        self.choose_piece_rules[chooseind1].reset_evaluation_stats()
+        self.choose_piece_rules[chooseind2].reset_evaluation_stats()
+        self.place_piece_rules[placeind1].reset_evaluation_stats()
+        self.place_piece_rules[placeind2].reset_evaluation_stats()
+
 
     def evaluate_fitness(self):
         #evaluate choose piece rules
@@ -115,7 +132,7 @@ class Genome(quarto.Player):
                     self.set_quarto(game)
                     winner = game.run()
                     #print(f'\tWon ? {winner==playerindex}')
-                    self.choose_piece_rules[i].evaluate_game_rule(True if winner==playerindex else False)
+                    self.choose_piece_rules[i].evaluate_game_rule(winner==playerindex)
                     #logging.warning(f"main: Winner: player {winner}")
                 make_sense=self.choose_piece_rules[i].rule_make_sense and self.choose_piece_rules[i].action_make_sense
                 #print(f'Rule choose {i} makes sense? {make_sense} , rule? {self.choose_piece_rules[i].rule_make_sense} act? {self.choose_piece_rules[i].action_make_sense}')
@@ -124,9 +141,9 @@ class Genome(quarto.Player):
                 #count+=1
                 #if count==10:
 
-            
+        self.choose_piece_rules=sorted(self.choose_piece_rules,key=lambda a: a.rule_quality,reverse=True)  
         self.evaluating_choose_piece_rules=self.choose_piece_rules
-
+        
         for i in range(len(self.place_piece_rules)):
             #put rule as first
             self.evaluating_place_piece_rules= [self.place_piece_rules[i]] + self.place_piece_rules[:i] + self.place_piece_rules[i+1:]
@@ -142,7 +159,7 @@ class Genome(quarto.Player):
                     self.set_quarto(game)
                     winner = game.run()
                     #print(f'\tWon ? {winner==playerindex}')
-                    self.place_piece_rules[i].evaluate_game_rule(True if winner==playerindex else False)
+                    self.place_piece_rules[i].evaluate_game_rule(winner==playerindex)
                     #logging.warning(f"main: Winner: player {winner}")
                 make_sense=self.place_piece_rules[i].rule_make_sense and self.place_piece_rules[i].action_make_sense
                 #print(f'Rule place {i} makes sense? {make_sense} , rule? {self.place_piece_rules[i].rule_make_sense} act? {self.place_piece_rules[i].action_make_sense}')
@@ -153,8 +170,7 @@ class Genome(quarto.Player):
 
         self.evaluating=False
         #updated priority of rules, checking first the rules less probable to be true
-        self.choose_piece_rules=sorted(self.choose_piece_rules,key=lambda a: a.rule_true)
-        self.place_piece_rules=sorted(self.place_piece_rules,key=lambda a: a.rule_true)
+        self.place_piece_rules=sorted(self.place_piece_rules,key=lambda a: a.rule_quality,reverse=True)
         #now evaluate whole genome
         self.evaluating_genome=True
         wins=0
@@ -174,3 +190,6 @@ class Genome(quarto.Player):
 
     def __str__(self):
         return f'\tChoose piece rules :\n{NEWLINE.join([str(rule) for rule in self.choose_piece_rules])} \n\t; Place piece rules :\n{NEWLINE.join([str(rule) for rule in self.place_piece_rules])}'
+
+def generate_rules():
+    return [Rule(True,None) for _ in range(random.randint(9,15))],[Rule(False,None) for _ in range(random.randint(9,15))]
