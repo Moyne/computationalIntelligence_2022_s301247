@@ -173,7 +173,7 @@ class IfNode:
         if self.op:
             #print(f'Need a child or two')
             self.childs.append(IfNode(self,self.choose_piece,self.quarto))
-            if self.op not in IF_OPERATIONS_WITH_ONE_OPERAND:
+            if self.value not in IF_OPERATIONS_WITH_ONE_OPERAND:
                 self.childs.append(IfNode(self,self.choose_piece,self.quarto))
         else:
             pass
@@ -196,18 +196,18 @@ class IfNode:
                     #print(f'Need a child or two')
                     if random.random()<1/3 and len(self.childs)>0:
                         #keep old childs
-                        if self.op in IF_OPERATIONS_WITH_ONE_OPERAND and len(self.childs)==2:
+                        if self.value in IF_OPERATIONS_WITH_ONE_OPERAND and len(self.childs)==2:
                             #remove one of the two childs in case
                             self.childs.pop(random.randint(0,len(self.childs)-1))
                         num=random.randint(0,6)
                         if num==0 or num==2:
                             self.childs[0].mutate()
-                        if num==1 or num==2 and self.op not in IF_OPERATIONS_WITH_ONE_OPERAND:
+                        if num==1 or num==2 and self.value not in IF_OPERATIONS_WITH_ONE_OPERAND:
                             self.childs[1].mutate()
                     else:
                         self.childs=[]
                         self.childs.append(IfNode(self,self.choose_piece,self.quarto))
-                        if self.op not in IF_OPERATIONS_WITH_ONE_OPERAND:
+                        if self.value not in IF_OPERATIONS_WITH_ONE_OPERAND:
                             self.childs.append(IfNode(self,self.choose_piece,self.quarto))
                 else:
                     self.childs=[]
@@ -222,18 +222,18 @@ class IfNode:
                     #print(f'Need a child or two')
                     if random.random()<1/3 and len(self.childs)>0:
                         #keep old childs
-                        if self.op in IF_OPERATIONS_WITH_ONE_OPERAND and len(self.childs)==2:
+                        if self.value in IF_OPERATIONS_WITH_ONE_OPERAND and len(self.childs)==2:
                             #remove one of the two childs in case
                             self.childs.pop(random.randint(0,len(self.childs)-1))
                         num=random.randint(0,6)
                         if num==0 or num==2:
                             self.childs[0].mutate()
-                        if num==1 or num==2 and self.op not in IF_OPERATIONS_WITH_ONE_OPERAND:
+                        if num==1 or num==2 and self.value not in IF_OPERATIONS_WITH_ONE_OPERAND:
                             self.childs[1].mutate()
                     else:
                         self.childs=[]
                         self.childs.append(IfNode(self,self.choose_piece,self.quarto))
-                        if self.op not in IF_OPERATIONS_WITH_ONE_OPERAND:
+                        if self.value not in IF_OPERATIONS_WITH_ONE_OPERAND:
                             self.childs.append(IfNode(self,self.choose_piece,self.quarto))
                 else:
                     self.childs=[]      
@@ -258,7 +258,7 @@ class IfNode:
 
     def __str__(self):
         if self.op:
-            if self.op not in IF_OPERATIONS_WITH_ONE_OPERAND:
+            if self.value not in IF_OPERATIONS_WITH_ONE_OPERAND:
                 return f'({str(self.childs[0])}) {self.value} ({str(self.childs[1])})'
             else:
                 return f'{self.value} ({str(self.childs[0])})'
