@@ -14,13 +14,18 @@ from os.path import isfile
 def main(training,best_player_file,generations):
     mp=None
     if training:
+        #generate a genetic programming agent
         mp=gp(None,best_player_file,generations)
+        print(f'\n\nMy player is {mp.player}\n\nwith fitness: {mp.player.fitness} and win% of {mp.player.fitness+0.4*mp.player.random_pick}%\n')
     else:
         if isfile(best_player_file):
+            #unpickle agent
             mp=pickle.load(open(best_player_file,'rb'))
+            print(f'\n\nMy player is {mp}\n\nwith fitness: {mp.fitness} and win% of {mp.fitness+0.4*mp.random_pick}%\n')
         else:
             print(f'WARNING: Filename provided doesn\'t exists! If you don\'t have a trained player set the --training flag')
     if mp is not None:
+        #play a game
         print(f'Game against random player starting, my player is player 1 ...')
         game = quarto.Quarto()
         game.set_players((RandomPlayer(game), mp))

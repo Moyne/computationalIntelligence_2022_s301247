@@ -78,33 +78,55 @@ One cool thing is about the easiness of possible 'plugins', adding functions or 
 
 #### Results
 
-The best player currently won 86% of the games against the random player, with older architectures I achieved 90, 95% as well but I didn't like the rules because they were too overshadowing of the rest of the rules, in fact is because of that that now rules are forced to have a possibility of trueness of less than 50%.
+In general after a couple of iterations the best player usually is around a range of 80% of winrate against the random player, these results are pretty promising, and could be improved significantly with parameter tuning(use of other GA to pick best params maybe) or better library functions.
 
-These percentages are taken from the fitness of the genome, in fact the 86% agent won 86 games but got 83 as fitness because during those 100 games 3 moves were random(3 in total between choosing actions and placing ones).
+The best player currently won 82% of the games against the random player, with older architectures I achieved 90, 95% as well but I didn't like the rules because they were too overshadowing of the rest of the rules, in fact is because of that that now rules are forced to have a possibility of trueness of less than 66%.
+
+These percentages are taken from the fitness of the genome, in fact the 82% agent won 82 games but got 79.2 as fitness because during those 100 games 7 moves were random(7 in total between choosing actions and placing ones, fitness is calculated by the number of wins substracted by 0,4*number of random picks).
 
 Here are the set of rules of the agent I got:
 
 ```
-Rule: if (most_used_characteristic) ne (characteristic_in_antidiagonal) ---> action (not_coloured_piece) possible (coloured_piece) ::= rule quality 26.333333333333336
-Rule: if (most_used_characteristic) ne (characteristic_in_antidiagonal) ---> action (not_coloured_piece) possible (coloured_piece) ::= rule quality 26.333333333333336
-Rule: if ((characteristic_in_diagonal) eq (characteristic_in_most_used_column_not_complete)) eq (not (True)) ---> action (high_piece) possible ((not_coloured_piece) similarinlessusedrownotcomplete ((not_high_piece) falses ((not_high_piece) diffinlessusedcolnotcomplete ((not_coloured_piece) moreunique (solid_piece))))) ::= rule quality 21.666666666666664
-Rule: if (characteristic_in_most_used_row_not_complete) and ((characteristic_not_in_most_used_column_not_complete) ne (characteristic_not_in_antidiagonal)) ---> action (not_solid_piece) possible (solid_piece) ::= rule quality 16.547619047619044
-Rule: if (characteristic_in_less_used_row) ne (characteristic_in_antidiagonal) ---> action (not_coloured_piece) possible (coloured_piece) ::= rule quality 16.428571428571427
-Rule: if (less_used_characteristic) eq (characteristic_not_in_antidiagonal) ---> action ((not_coloured_piece) diffinlessusedrownotcomplete (not_solid_piece)) possible (not_solid_piece) ::= rule quality 7.142857142857143
-Rule: if (less_used_characteristic) eq (characteristic_not_in_antidiagonal) ---> action ((not_coloured_piece) diffinlessusedrownotcomplete (not_solid_piece)) possible (not_solid_piece) ::= rule quality 7.142857142857143
-Rule: if (characteristic_not_in_most_used_row_not_complete) ne (characteristic_not_in_antidiagonal) ---> action (not_solid_piece) possible (solid_piece) ::= rule quality 0.0
-Rule: if (characteristic_not_in_most_used_row_not_complete) ne (characteristic_not_in_antidiagonal) ---> action (not_solid_piece) possible (solid_piece) ::= rule quality 0.0
+Rule: If not ((characteristic_in_less_used_row) eq (characteristic_not_in_less_used_column)) --> Then ((not_high_piece) possible (coloured_piece)) possible (solid_piece)
+
+Rule: If (characteristic_in_antidiagonal) and ((most_used_characteristic) ne (characteristic_in_most_used_row_not_complete)) --> Then (((high_piece) similarinmostusedcolumnnotcomplete (not_high_piece)) possible (square_piece)) possible ((not_square_piece) similarinlessusedcolumnnotcomplete (coloured_piece))
+
+Rule: If (((characteristic_not_in_less_used_column) ne (most_used_characteristic)) ne ((((not_square) ne (characteristic_not_in_less_used_row)) and ((not (characteristic_in_antidiagonal)) ne ((characteristic_not_in_most_used_row_not_complete) and (characteristic_not_in_most_used_row_not_complete)))) eq (((square) ne ((not_solid) or (not_solid))) ne (characteristic_in_diagonal)))) eq (((characteristic_not_in_less_used_column) ne (characteristic_in_less_used_column)) ne (not_high)) --> Then (((coloured_piece) differentdiag (((not_coloured_piece) similarinmostusedrownotcomplete (coloured_piece)) diffinlessusedcolnotcomplete (not_solid_piece))) similarinmostusedrownotcomplete (not_square_piece)) diffinmostusedcolnotcomplete (square_piece)
+
+Rule: If ((less_used_characteristic) or (not (characteristic_in_diagonal))) eq (not_coloured) --> Then ((coloured_piece) lessunique ((square_piece) similarinlessusedrownotcomplete (((coloured_piece) lessunique (coloured_piece)) lessunique ((coloured_piece) diffinmostusedrownotcomplete (coloured_piece))))) possible ((coloured_piece) differentdiag (coloured_piece))
+Rule: If ((characteristic_not_in_most_used_column_not_complete) eq (characteristic_in_less_used_row)) and ((False) eq (((not (solid)) ne (False)) and (characteristic_in_diagonal))) --> Then ((((not_solid_piece) diffinlessusedrownotcomplete (((not_square_piece) differentantidiag (solid_piece)) falses (coloured_piece))) lessunique (square_piece)) similarinlessusedcolumnnotcomplete (square_piece)) possible (not_coloured_piece)
+
+Rule: If (characteristic_not_in_most_used_column_not_complete) ne (characteristic_not_in_most_used_row_not_complete) --> Then (not_solid_piece) possible ((solid_piece) similarinmostusedcolumnnotcomplete (solid_piece))
+
+Rule: If (most_used_characteristic) and (((((solid) ne ((not_solid) and (less_used_characteristic))) and ((characteristic_in_antidiagonal) or ((coloured) eq (most_used_characteristic)))) ne (characteristic_in_less_used_column)) eq (((characteristic_in_antidiagonal) ne (not_coloured)) and (True))) --> Then (solid_piece) possible (((solid_piece) possible ((((not_solid_piece) differentdiag (square_piece)) similarinmostusedrownotcomplete (coloured_piece)) diffinmostusedrownotcomplete (((not_high_piece) similarinlessusedrownotcomplete (square_piece)) lessunique (square_piece)))) moreunique ((((square_piece) diffinlessusedrownotcomplete ((square_piece) similarinlessusedcolumnnotcomplete (solid_piece))) differentantidiag (not_coloured_piece)) falses (not_solid_piece)))
+
+Rule: If (((((not_coloured) eq ((False) or (characteristic_in_less_used_row))) ne (characteristic_in_most_used_column_not_complete)) eq (not (((characteristic_in_less_used_row) eq (characteristic_not_in_less_used_column)) and (characteristic_not_in_most_used_row_not_complete)))) or (characteristic_not_in_diagonal)) ne ((((not_high) eq (coloured)) or (characteristic_in_most_used_column_not_complete)) ne ((False) ne ((most_used_characteristic) and ((characteristic_in_less_used_column) ne ((characteristic_not_in_most_used_row_not_complete) ne (high)))))) --> Then ((((not_square_piece) diffinlessusedrownotcomplete (not_solid_piece)) similarinlessusedrownotcomplete (not_square_piece)) differentantidiag (high_piece)) possible (coloured_piece)
+
+Rule: If (characteristic_not_in_less_used_row) ne (characteristic_not_in_less_used_column) --> Then ((not_solid_piece) diffinmostusedcolnotcomplete ((square_piece) diffinlessusedrownotcomplete ((solid_piece) trues (((coloured_piece) diffinlessusedrownotcomplete (not_solid_piece)) differentantidiag ((coloured_piece) diffinmostusedcolnotcomplete (not_solid_piece)))))) diffinlessusedrownotcomplete ((high_piece) diffinlessusedcolnotcomplete (not_solid_piece))
+
+Rule: If (((characteristic_not_in_antidiagonal) ne (((characteristic_not_in_most_used_column_not_complete) ne (not (not_coloured))) and (characteristic_in_most_used_row_not_complete))) and ((solid) and (coloured))) ne ((not (((not_high) and ((True) and (not_solid))) ne (characteristic_not_in_less_used_column))) and (((((less_used_characteristic) and (not_coloured)) eq (False)) and (((characteristic_not_in_diagonal) or (coloured)) ne ((square) eq (characteristic_in_less_used_row)))) or (characteristic_in_most_used_row_not_complete))) --> Then (((solid_piece) lessunique (not_coloured_piece)) similarinmostusedcolumnnotcomplete ((not_high_piece) trues ((high_piece) similarinmostusedcolumnnotcomplete ((not_square_piece) diffinlessusedrownotcomplete ((square_piece) lessunique (not_coloured_piece)))))) possible (((not_solid_piece) diffinmostusedcolnotcomplete (square_piece)) similarinlessusedcolumnnotcomplete ((((coloured_piece) diffinlessusedrownotcomplete ((solid_piece) similarinmostusedcolumnnotcomplete (not_high_piece))) similarinlessusedrownotcomplete (not_square_piece)) similarinmostusedrownotcomplete ((high_piece) diffinlessusedrownotcomplete (not_square_piece))))
+
         ; Place piece rules :
-Rule: if (num_pieces_in_most_used_row_not_complete) eq (3) ---> action ((element_in_most_used_row_not_complete) colless (element_in_corner)) possible (element_in_most_used_row_not_complete) ::= rule quality 23.809523809523807
-Rule: if (num_elements_in_antidiagonal) lt ((((1) and ((7) add (14))) gt ((0) gte (num_pieces_chosen))) lte (13)) ---> action (element_in_most_used_column_not_complete) possible (element_inside) ::= rule quality 22.61904761904762
-Rule: if (num_elements_in_antidiagonal) lt ((((1) and ((7) add (14))) gt ((0) gte (num_pieces_chosen))) lte (13)) ---> action (element_in_most_used_column_not_complete) possible (element_inside) ::= rule quality 22.61904761904762
-Rule: if (num_elements_in_antidiagonal) lt ((((1) and ((7) add (14))) gt ((0) gte (num_pieces_chosen))) lte (13)) ---> action (element_in_most_used_column_not_complete) possible (element_inside) ::= rule quality 22.61904761904762
-Rule: if (num_elements_in_antidiagonal) mul (3) ---> action (element_in_most_used_column_not_complete) possible ((element_in_less_used_row) possible (element_in_most_used_row_not_complete)) ::= rule quality 17.166666666666664
-Rule: if not (num_pieces_in_most_used_column_not_complete) ---> action ((element_in_less_used_column) rowless ((element_inside) possible (element_in_corner))) possible ((element_in_corner) rowless (element_inside)) ::= rule quality 13.214285714285715
-Rule: if (less_used_column) and (less_used_row) ---> action (element_in_diagonal) possible (element_in_diagonal) ::= rule quality 5.416666666666668
-Rule: if (less_used_column) and (less_used_row) ---> action (element_in_diagonal) possible (element_in_diagonal) ::= rule quality 5.416666666666668
-Rule: if (less_used_column) and (less_used_row) ---> action (element_in_diagonal) possible (element_in_diagonal) ::= rule quality 5.416666666666668
-Rule: if (num_pieces_in_less_used_column) lt ((False) or (((less_used_row) or (12)) mul (num_pieces_in_most_used_row))) ---> action ((element_in_less_used_column) rowless ((element_inside) possible (element_in_corner))) possible ((element_in_corner) rowless (element_inside)) ::= rule quality -3.7142857142857144
+
+Rule: If (not ((((num_pieces_chosen) or ((most_used_row) lte (9))) eq ((11) mul ((num_pieces_in_less_used_column) gt (8)))) eq ((not ((num_pieces_in_most_used_row_not_complete) gte (5))) ne (num_pieces_in_less_used_column)))) eq (((2) sub (num_elements_in_antidiagonal)) gt (num_pieces_in_most_used_row_not_complete)) --> Then (element_in_most_used_column_not_complete) possible (element_in_most_used_column_not_complete)
+
+Rule: If not (not (num_pieces_in_less_used_row)) --> Then ((element_in_most_used_column_not_complete) colmore (element_in_diagonal)) possible (((element_in_less_used_row) antidiagmore (element_in_diagonal)) possible ((element_in_less_used_row) antidiagmore (((element_in_corner) colmore (element_in_antidiagonal)) rowmore (((element_in_less_used_column) antidiagless (element_in_most_used_column_not_complete)) rowless (element_in_corner)))))
+
+Rule: If (1) sub (num_elements_in_antidiagonal) --> Then (element_in_most_used_row_not_complete) possible (element_in_antidiagonal)
+
+Rule: If not (num_elements_in_diagonal) --> Then ((element_in_most_used_row_not_complete) possible (((((element_in_antidiagonal) rowmore (element_inside)) antidiagless (element_in_less_used_row)) antidiagmore (((element_in_diagonal) colmore (element_in_diagonal)) antidiagless (element_in_corner))) diagmore ((((element_in_antidiagonal) diagless (element_in_corner)) antidiagmore (element_in_corner)) colmore (element_in_diagonal)))) possible (element_in_most_used_column_not_complete)
+
+Rule: If ((12) add (((((11) add (num_pieces_in_less_used_row)) sub ((0) add (False))) gt (16)) lte (7))) and (num_elements_in_diagonal) --> Then ((element_in_diagonal) antidiagmore (element_in_most_used_row_not_complete)) possible ((((element_in_diagonal) antidiagmore (((element_in_most_used_row_not_complete) antidiagmore (element_in_antidiagonal)) colless (element_in_most_used_column_not_complete))) possible ((element_in_less_used_row) possible ((element_in_less_used_column) colless (element_in_less_used_row)))) antidiagless (element_in_most_used_column_not_complete))
+
+Rule: If ((((num_pieces_in_most_used_row_not_complete) gte ((14) lte (most_used_column))) mul (16)) gt (10)) gte (num_elements_in_antidiagonal) --> Then (element_in_less_used_row) possible (element_in_less_used_column)
+
+Rule: If ((num_elements_in_diagonal) sub (most_used_row)) eq (num_pieces_in_most_used_column_not_complete) --> Then (element_in_most_used_column_not_complete) diagmore ((element_in_diagonal) diagmore ((element_in_most_used_column_not_complete) colmore (element_in_less_used_row)))
+
+Rule: If (not ((not (((4) lte (5)) add (num_pieces_left))) or (9))) add (((most_used_column) sub (num_elements_in_antidiagonal)) sub ((num_elements_in_diagonal) gte ((num_pieces_in_less_used_row) sub (((num_elements_in_diagonal) sub (less_used_column)) mul (not (num_pieces_left)))))) --> Then (element_in_diagonal) possible (element_in_less_used_column)
+
+Rule: If not ((False) sub (num_elements_in_diagonal)) --> Then ((element_in_diagonal) rowmore (((element_in_less_used_row) diagless (((element_in_corner) diagless (element_in_most_used_column_not_complete)) rowmore (element_inside))) diagmore (element_in_corner))) possible (element_in_most_used_column_not_complete)
+
+with fitness: 79.2 and win% of 82.0%
 ```
 
 
@@ -483,6 +505,63 @@ I really like the implementation of the reward system tho
 
 > I enjoy most of the approaches taken, good job and keep it up!
 
+## Peer Reviews received by Collegues
+
+### Lab 1 : Set Covering
+
+#### Peer Review by [@Xiuss](https://github.com/Xiusss)
+
+- The README.md file is really detailed. The code is really well commented where needed(like in the choice of the metric).
+
+- The metric, which is "random-reasonably" chosen by the author fits well in the proposed solution representing a good compromise between being easy to compute and efficient.
+
+- The representation of the states using tuples of tuples is well-motivated and, in my opinion, one of the most efficient one.
+
+- The computation of the solution is relatively fast, especially for N>20 and if compared with other solutions (included mine r.i.p.)).
+
+- The other solutions (not proposed as "the" solution but reported in the repository) are really interesting because they provide algorithms that, through a necessary compromise on the optimality of the solution, succeed in computing a solution with N=100 in a reasonable amount of time (~500 s).
+
+**Minors:**
+If I must find something that could be better, despite it doesn't add weight, the empty sub-list should not be included in the solution. 
+{Solution (***()***, (0, 33, 3, 35, 6, 7, 41, 9, 11, 44, 14, 15, 48, 49, 25, 27, 29, 31),[...]) with weight 65}
+
+Really nice job.
+
+#### Peer Review by [@shadow036](https://github.com/shadow036)
+
+##### 0. General considerations
+First of all I must say that the readme is very well written and it explains very clearly the steps and reasoning behind the chosen algorithms. Also the fact that you tried other solutions as well in addition to the main one is quite admirable.
+##### 1. Proposed solution
+This solution takes inspiration from the proposed template, although with custom modiffications. I really like the way you expressed in the most concise way operations which otherwise would have needed multiple lines.
+In addition the comments throughout the code really helps understanding each passage of the program.
+There are two things whose correctness and efficiency are not maximized in my opinion, even though these kinds of reasonings are quite subjective:
+a. I don't know if using tuples is really convenient since in this way you have to convert from tuple to list and back every now and then.
+b.The second point is about the adequateness of an A* algorithm for this kind of problems. As explained in the theory we must make sure that the heuristic part of the A* function never overestimate the actual cost and in this case I don't think it can be known a priori which is a good heuristic function(also in this case the heuristic cost is always equal to 1 which doesn't really discriminates different solutions).  Maybe a BFS or even a DFS could be able in average more adequate for this kinds of problems.
+##### 2. Other solutions
+Same good remarks and opinions about changes from previous section since it's very similar with in addition the advantage of helping to find the solutions for high (>= 100) Ns thanks to one added stopping criterion.
+The chosen criterion of choosing only a part of the children of a certain state could be good event though I would have chosen something else like a limit to the depth (in this case the number of subtuples) of all solutions, before passing to the next one (but again this is a personal preference).
+##### 3. Final remak
+In the end I think this is a very good job with very clear explanations and the only advices I gave really depend on the way each person sees the problem.
+
+## Lab 2: Set Covering (Genetic Algorithm)
+
+No feedback received :(
+
+## Lab 3: Nim
+
+### Peer Review by [@KrzysztofKleist](https://github.com/KrzysztofKleist)
+
+First of all it's good you provided the readme.md and the code is in jupyter notebook files making it easier to read an understand.
+__Task 3.1__
+For the hard-coded agent your idea seems to work fine, but you unfortunaly didn't provide the information about how many games did hard-coded agent win.
+__Task 3.2__
+Regarding the evolved agent the results are really good. Your evolved agent after the first generation already reaches 90% of succes rate. You could've tried to increase the size of the population and the offspring to introduce bigger variety.
+__Task 3.3__
+In minmax example I can see that your code is not finished.
+__Test 3.4__
+Your RL agent is the best so far. It reaches way better results than mine, I wasn;t even close to yours, good job!
+
+
 ## Code of Final Project and labs
 
 ### Final Project: Quarto
@@ -506,15 +585,19 @@ from os.path import isfile
 def main(training,best_player_file,generations):
     mp=None
     if training:
+        #generate a genetic programming agent
         mp=gp(None,best_player_file,generations)
+        print(f'\n\nMy player is {mp.player}\n\nwith fitness: {mp.player.fitness} and win% of {mp.player.fitness+0.4*mp.player.random_pick}%\n')
     else:
         if isfile(best_player_file):
+            #unpickle agent
             mp=pickle.load(open(best_player_file,'rb'))
+            print(f'\n\nMy player is {mp}\n\nwith fitness: {mp.fitness} and win% of {mp.fitness+0.4*mp.random_pick}%\n')
         else:
             print(f'WARNING: Filename provided doesn\'t exists! If you don\'t have a trained player set the --training flag')
     if mp is not None:
+        #play a game
         print(f'Game against random player starting, my player is player 1 ...')
-        print(f'\n\nMy player is {mp}\n\nwith fitness: {mp.fitness} and win% of {mp.fitness+mp.random_pick}%\n')
         game = quarto.Quarto()
         game.set_players((RandomPlayer(game), mp))
         mp.set_quarto(game)
@@ -566,11 +649,15 @@ from .genome import Genome,generate_rules,MINRULES,MAXRULES
 
 class GeneticProgramming:
     def __init__(self) -> None:
+        #sizes
         self.__POPULATION_SIZE__=5
         self.__OFFSPRING_SIZE__=30
         print(f'Generating initial population ...')
+        #generate initial population
         self.population=[Genome(None) for _ in range(self.__POPULATION_SIZE__)]
+        #sort the population by fitness
         self.population=sorted(self.population,key=lambda a: a.fitness,reverse=True)[:self.__POPULATION_SIZE__]
+        #weigths roulette, not used actually since the weigths are calculated differently and not though a binomial function
         self.WEIGHTS_ROULETTE=[binom.pmf(k=_,n=self.__POPULATION_SIZE__-1,p=1/self.__POPULATION_SIZE__) for _ in range(self.__POPULATION_SIZE__)]
 
     def select_parent(self,k=2,weigths=None):
@@ -581,33 +668,34 @@ class GeneticProgramming:
 
     def cross_oversplit(self,genome1: Genome,genome2: Genome):
         """One point split crossover"""
-        #gen_choose,gen_place= [len(gen.choose_piece_rules) for gen in [genome1,genome2]], [len(gen.place_piece_rules) for gen in [genome1,genome2]]
-        #index_min_choose,index_min_place=gen_choose.index(min(gen_choose)),gen_place.index(min(gen_place))
-        #point_choose,point_place = random.randint(0,min(gen_choose)-1),random.randint(0,min(gen_place)-1)
+        #create list of rules
         c_rules=genome1.choose_piece_rules+genome2.choose_piece_rules
         p_rules=genome1.place_piece_rules+genome2.place_piece_rules
+        #shuffle lists
         random.shuffle(c_rules)
         random.shuffle(p_rules)
-        #avg_c_rules,avg_p_rules=len(c_rules)//2,len(p_rules)//2
-        #num_c_rules,num_p_rules=random.randint(avg_c_rules-4 if avg_c_rules-4>0 else 1,avg_c_rules+4 if avg_c_rules+4<len(c_rules) else len(c_rules)),random.randint(avg_p_rules-4 if avg_p_rules-4>0 else 1,avg_p_rules+4 if avg_p_rules+4<len(p_rules) else len(p_rules))
+        #take from list a good amount of rules
         return c_rules[:random.randint(MINRULES,MAXRULES)],p_rules[:random.randint(MINRULES,MAXRULES)]
-        #return [genome1,genome2][index_min_choose].choose_piece_rules[:point_choose] + [genome1,genome2][1-index_min_choose].choose_piece_rules[point_choose:], [genome1,genome2][index_min_place].place_piece_rules[:point_place] + [genome1,genome2][1-index_min_place].place_piece_rules[point_place:]
 
     def cross_oversplit_rules(self,genome: Genome,new_c_rules,new_p_rules):
         """One point split crossover"""
+        # FUNCTION NOT USED ANYMORE XXXXXXXX
+        #create list of rules
         c_rules=genome.choose_piece_rules+new_c_rules
         random.shuffle(c_rules)
+        #shuffle lists
         p_rules=genome.place_piece_rules+new_p_rules
         random.shuffle(p_rules)
-        #avg_c_rules,avg_p_rules=len(c_rules)//2,len(p_rules)//2
-        #num_c_rules,num_p_rules=random.randint(avg_c_rules-4 if avg_c_rules-4>0 else 1,avg_c_rules+4 if avg_c_rules+4<len(c_rules) else len(c_rules)),random.randint(avg_p_rules-4 if avg_p_rules-4>0 else 1,avg_p_rules+4 if avg_p_rules+4<len(p_rules) else len(p_rules))
+        #take from list a good amount of rules
         return c_rules[:random.randint(MINRULES,MAXRULES)],p_rules[:random.randint(MINRULES,MAXRULES)]
 
 
     def evolve(self,iterations):
+        #evolving algorithm
         offspring=[]
         print(f'Population at the beginning is {self.population_stats()}')
         for i in range(iterations):
+            #get minfit and calculate weigths for parent selection probabilities
             minfit,maxfit=min([gen.fitness for gen in self.population]),max([gen.fitness for gen in self.population])
             weigths=[-minfit+self.population[_].fitness+1 for _ in range(self.__POPULATION_SIZE__)]
             weigths=[_/sum(weigths) for _ in weigths]
@@ -615,41 +703,43 @@ class GeneticProgramming:
                 #always mutate
                 cross=True
                 if random.random()<1/3:
+                    #mutate tree
                     cross=False
                     parent=self.select_parent(k=1,weigths=weigths)[0]
+                    #generate new genome that is the same as the parent
                     off=Genome(parent.quarto,parent.choose_piece_rules,parent.place_piece_rules)
                     off.mutate()
                 else:
+                    #crossover tree
                     parents= self.select_parent(k=2,weigths=weigths)
+                    #get crossover rules
                     choose_rules,place_rules=self.cross_oversplit(parents[0],parents[1])
+                    #generate new genome
                     off=Genome(parents[0].quarto,choose_rules,place_rules)
-                    #off.crossover_rules()
+                #calculate fitness of new genome and add it to offspring
                 off.evaluate_fitness()
                 offspring.append(off)
-                #print(f'Genome {o} of gen {i} was made by {"crossover" if cross else "mutation"} and has fitness {off.fitness}')
+            #get new population
             self.population=sorted(self.population+offspring,key=lambda a: a.fitness,reverse=True)[:self.__POPULATION_SIZE__]
             if not i%6:
+                #once every 6 gens get new visitors to the population
                 print(f'Population after {i+1} gens before visitors is {self.population_stats()}')
                 print(f'Visitor from out of the town are arriving')
-                #choose_rules,place_rules=generate_rules()
+                #generate new genomes totally from scratch
                 off_visitors=[Genome(None) for _ in range(int(0.1*self.__OFFSPRING_SIZE__))]
-                #for _ in range(int(0.2*self.__OFFSPRING_SIZE__)):
-                    #p=self.population[random.randint(0,self.__POPULATION_SIZE__-1)]
-                    #c_rules,p_rules=self.cross_oversplit_rules(p,choose_rules,place_rules)
-                    #ov=Genome(p.quarto,c_rules,p_rules)
-                    #ov.crossover_rules()
-                    #ov.evaluate_fitness()
-                    #off_visitors.append(ov)
                 print(f'Now they have meet the population they generated two kids with fitness of {[o.fitness for o in off_visitors]}')
+                #force at least 2 of these visitors to the population
                 self.population=sorted(self.population[:self.__POPULATION_SIZE__-2]+off_visitors,key=lambda a: a.fitness,reverse=True)[:self.__POPULATION_SIZE__]
             offspring=[]
             print(f'Population after {i+1} gens is {self.population_stats()}')
 
     def population_stats(self):
-        return [(f'fitness {h.fitness}',f'rand {h.random_pick}') for h in self.population]
+        #print purposes
+        return [f'fit {h.fitness} rnd {h.random_pick} wins {h.fitness+0.4*h.random_pick}' for h in self.population]
 
 
     def get_best_player(self):
+        #get best genome
         return self.population[0]
 
 
@@ -662,25 +752,31 @@ class GeneticProg(quarto.Player):
         super().__init__(quarto)
         self.quarto=quarto
         print('Training phase ...')
+        #get genetic programming algorithm running and evolve it for x gens
         population=GeneticProgramming()
         population.evolve(generations)
         print(f'Population after {generations} gens is {population.population_stats()}')
+        #get best player
         self.player=population.get_best_player()
         print(f'Player is\n{self.player}')
         try:
             with open(best_player_file,'wb') as file:
+                #save best player into file through dill(pickle)
                 pickle.dump(self.player, file,protocol=0)
         except OSError as error:
             print(f'Error while pickle saving best player {error}')
     
     def set_quarto(self,quarto):
+        #set quarto to myself and best player
         self.quarto=quarto
         self.player.set_quarto(self.quarto)
 
     def choose_piece(self) -> int:
+        #play with best player
         return self.player.choose_piece()
 
     def place_piece(self) -> tuple:
+        #play with best player
         return self.player.place_piece()
 ```
 > ***genome.py***
@@ -691,13 +787,21 @@ import copy
 import quarto
 from .rule import Rule
 import agents.quartolib as quartolib
-from .actionslib import random_choose,random_place
 import numpy as np
 NUMROWS=4
 NUMCOLUMNS=4
 NEWLINE="\n"
 MINRULES=5
 MAXRULES=10
+
+#random choosing function used in case of no good rule found or by random player
+def random_choose(quarto) -> int:
+    return random.randint(0, 15)
+#random placing function used in case of no good rule found or by random player
+def random_place(quarto) -> tuple:
+    return random.randint(0, 3), random.randint(0, 3)
+
+    
 class RandomPlayer(quarto.Player):
     """Random player"""
 
@@ -714,89 +818,114 @@ class Genome(quarto.Player):
     def __init__(self,quarto: quarto.Quarto,choose_piece_rules=None,place_piece_rules=None) -> None:
         super().__init__(quarto)
         self.quarto=quarto
+        #set of rules used
         self.choose_piece_rules=copy.deepcopy(choose_piece_rules) if choose_piece_rules is not None else [Rule(True,None) for _ in range(random.randint(MINRULES,MAXRULES))]
         self.place_piece_rules=copy.deepcopy(place_piece_rules) if place_piece_rules is not None else [Rule(False,None) for _ in range(random.randint(MINRULES,MAXRULES))]
+        #rules used during evaluation of the rules
         self.evaluating_choose_piece_rules=self.choose_piece_rules
         self.evaluating_place_piece_rules=self.place_piece_rules
         self.fitness=0
+        #am I during the evaluation of some rules?
         self.evaluating=False
+        #am I during my own evaluation?
         self.evaluating_genome=False
+        #number of times a random rule was used
         self.random_pick=0
         #print(f'\tChoose piece rules :\n {NEWLINE.join([str(rule) for rule in self.choose_piece_rules])} \n\t;Place piece rules:\n {NEWLINE.join([str(rule) for rule in self.place_piece_rules])}')
         if choose_piece_rules is None:
+            #I am a completely new genome and I need to be evaluated immediately
             self.evaluate_fitness()
-            print(f'Generated genome with fitness {self.fitness}')
+            print(f'Generated genome with fit {self.fitness} rnd {self.random_pick}, wins {self.fitness+0.4*self.random_pick}')
     
     def set_quarto(self,quarto):
+        #set quarto for myself + all my rules
         self.quarto=quarto
         for rule in self.choose_piece_rules+self.place_piece_rules:
             rule.set_quarto(self.quarto)
 
     def choose_piece(self):
+        #get possible actions
         board=self.quarto.get_board_status()
         placed_pieces=quartolib.get_placed_pieces(board)
         possible_pieces=[_ for _ in range(NUMROWS*NUMCOLUMNS) if _ not in placed_pieces]
         rules_to_use=self.evaluating_choose_piece_rules if self.evaluating else self.choose_piece_rules
         for rule in rules_to_use:
+            #evaluate the if tree
             val=rule.evaluate()
-            #print(f'Evaluated rule {rule} with val {val}')
             if val:
+                #if true check the then tree
                 act=rule.action()
                 if act in possible_pieces:
+                    #if the if tree is true and the then tree is possible update the stats of the rule and use it
                     if self.evaluating:
                         rule.evaluated(True,True)
                     return act
                 else:
+                    #if the if tree is true but the then tree is not possible update the stats and check next rule
                     if self.evaluating:
                         rule.evaluated(True,False)
             else:
+                #if the if tree is not possible update the stats of the rule
                 if self.evaluating:
                     rule.evaluated(False,False)
+        #no good rule was found, update the stats of the random picks
         if self.evaluating_genome:
             self.random_pick+=1
         return random_choose(self.quarto)
 
     def place_piece(self):
+        #get possible actions
         board=self.quarto.get_board_status()
         possible_placements=[(a[1],a[0]) for a in np.argwhere(board==-1).tolist()]
         rules_to_use=self.evaluating_place_piece_rules if self.evaluating else self.place_piece_rules
         for rule in rules_to_use:
+            #evaluate the if tree
             val=rule.evaluate()
-            #print(f'Evaluated rule {rule} with val {val}')
             if val:
+                #if true check the then tree
                 act=rule.action()
-                #print(f'Possible placements {possible_placements} act {act}')
                 if act in possible_placements:
+                    #if the if tree is true and the then tree is possible update the stats of the rule and use it
                     if self.evaluating:
                         rule.evaluated(True,True)
                     return act
                 else:
+                    #if the if tree is true but the then tree is not possible update the stats and check next rule
                     if self.evaluating:
                         rule.evaluated(True,False)
             else:
+                #if the if tree is not possible update the stats of the rule
                 if self.evaluating:
                     rule.evaluated(False,False)
+        #no good rule was found, update the stats of the random picks
         if self.evaluating_genome:
             self.random_pick+=1
         return random_place(self.quarto)
     
     def mutate(self):
-        #num=random.randint(0,4)
-        #if num%2==0:
-        self.choose_piece_rules[random.randint(0,len(self.choose_piece_rules)-1)].mutate()
-        #if num==1 or num==2:
-        self.place_piece_rules[random.randint(0,len(self.place_piece_rules)-1)].mutate()
-        #if num>2:
-            #self.crossover_rules()
+        #get a random number to choose which combination of mutation to apply
+        num=random.randint(0,6)
+        if num%2==0:
+            #mutate a random choose piece rule
+            self.choose_piece_rules[random.randint(0,len(self.choose_piece_rules)-1)].mutate()
+        if num==1 or num==2 or num==5 or num==6:
+            #mutate a random place piece rule
+            self.place_piece_rules[random.randint(0,len(self.place_piece_rules)-1)].mutate()
+        if num>2:
+            #do crossover between rules
+            self.crossover_rules()
 
     def crossover_rules(self):
+        #pick random rules
         chooseind1,chooseind2=random.randint(0,len(self.choose_piece_rules)-1),random.randint(0,len(self.choose_piece_rules)-1)
         placeind1,placeind2=random.randint(0,len(self.place_piece_rules)-1),random.randint(0,len(self.place_piece_rules)-1)
+        #swap trees between rules
         choose_then_node,place_then_node=self.choose_piece_rules[chooseind1].then_node,self.place_piece_rules[placeind1].then_node
         self.choose_piece_rules[chooseind1].then_node=self.choose_piece_rules[chooseind2].then_node
         self.choose_piece_rules[chooseind1].then_node=choose_then_node
         self.place_piece_rules[placeind1].then_node=self.place_piece_rules[placeind2].then_node
         self.place_piece_rules[placeind2].then_node=place_then_node
+        #reset evaluation stats of rules, they need to be reevealuted
         self.choose_piece_rules[chooseind1].reset_evaluation_stats()
         self.choose_piece_rules[chooseind2].reset_evaluation_stats()
         self.place_piece_rules[placeind1].reset_evaluation_stats()
@@ -810,10 +939,9 @@ class Genome(quarto.Player):
             #put rule as first
             self.evaluating_choose_piece_rules= [self.choose_piece_rules[i]] + self.choose_piece_rules[:i] + self.choose_piece_rules[i+1:]
             make_sense=False
-            #count=0
             # run only if the rule needs to be evaluated, so if the rule is mutated, otherwise use old data
             while not make_sense and self.choose_piece_rules[i].needs_evaluation():
-                #print(f'\tEvaluating choose rule #{i}')
+                #run 3 games with that rule evaluated as the first one
                 for _ in range(3):
                     self.choose_piece_rules[i].reset_game_stats()
                     game = quarto.Quarto()
@@ -821,16 +949,14 @@ class Genome(quarto.Player):
                     game.set_players((RandomPlayer(game), self) if playerindex==1 else (self, RandomPlayer(game)))
                     self.set_quarto(game)
                     winner = game.run()
-                    #print(f'\tWon ? {winner==playerindex}')
+                    #update game stats
                     self.choose_piece_rules[i].evaluate_game_rule(winner==playerindex)
-                    #logging.warning(f"main: Winner: player {winner}")
+                #does the rule make sense?
                 make_sense=self.choose_piece_rules[i].rule_make_sense and self.choose_piece_rules[i].action_make_sense
-                #print(f'Rule choose {i} makes sense? {make_sense} , rule? {self.choose_piece_rules[i].rule_make_sense} act? {self.choose_piece_rules[i].action_make_sense}')
+                #if not mutate the rule and rerun the loop
                 if not make_sense:
                     self.choose_piece_rules[i].mutate(self.choose_piece_rules[i].rule_make_sense,self.choose_piece_rules[i].action_make_sense)
-                #count+=1
-                #if count==10:
-
+        #reset order of rules
         self.evaluating_choose_piece_rules=self.choose_piece_rules
         
         for i in range(len(self.place_piece_rules)):
@@ -839,7 +965,7 @@ class Genome(quarto.Player):
             make_sense=False
             # run only if the rule needs to be evaluated, so if the rule is mutated, otherwise use old data
             while not make_sense and self.place_piece_rules[i].needs_evaluation():
-                #print(f'\tEvaluating place rule #{i}')
+                #run 3 games with that rule evaluated as the first one
                 for _ in range(3):
                     self.place_piece_rules[i].reset_game_stats()
                     game = quarto.Quarto()
@@ -847,41 +973,40 @@ class Genome(quarto.Player):
                     game.set_players((RandomPlayer(game), self) if playerindex==1 else (self, RandomPlayer(game)))
                     self.set_quarto(game)
                     winner = game.run()
-                    #print(f'\tWon ? {winner==playerindex}')
+                    #update game stats
                     self.place_piece_rules[i].evaluate_game_rule(winner==playerindex)
-                    #logging.warning(f"main: Winner: player {winner}")
+                #does the rule make sense?
                 make_sense=self.place_piece_rules[i].rule_make_sense and self.place_piece_rules[i].action_make_sense
-                #print(f'Rule place {i} makes sense? {make_sense} , rule? {self.place_piece_rules[i].rule_make_sense} act? {self.place_piece_rules[i].action_make_sense}')
+                #if not mutate the rule and rerun the loop
                 if not make_sense:
                     self.place_piece_rules[i].mutate(self.place_piece_rules[i].rule_make_sense,self.place_piece_rules[i].action_make_sense)
-            
+        #reset order of rules
         self.evaluating_place_piece_rules=self.place_piece_rules
 
         self.evaluating=False
-        #updated priority of rules, checking first the rules less probable to be true
+        #updated priority of rules based on the rule quality parameter
         self.choose_piece_rules=sorted(self.choose_piece_rules,key=lambda a: a.rule_quality,reverse=True)  
         self.place_piece_rules=sorted(self.place_piece_rules,key=lambda a: a.rule_quality,reverse=True)
-        #now evaluate whole genome
+        #now evaluate whole genome over a 100 games span
         self.evaluating_genome=True
         wins=0
-        #print(f'\tNow evaluating whole genome')
         for _ in range(100):
             game = quarto.Quarto()
             playerindex=random.randint(0,1)
             game.set_players((RandomPlayer(game), self) if playerindex==1 else (self, RandomPlayer(game)))
             self.set_quarto(game)
             winner = game.run()
-            #print(f'\tWon ? {winner==playerindex}')
             if winner==playerindex:
                 wins+=1
-        self.fitness= wins - self.random_pick
-        #print(f'Won in total {wins} games, total of {self.random_pick} random picks so fitness is {self.fitness}')
+        #fitness of genome
+        self.fitness= wins - 0.4*self.random_pick
 
 
     def __str__(self):
         return f'\tChoose piece rules :\n{NEWLINE.join([str(rule) for rule in self.choose_piece_rules])} \n\t; Place piece rules :\n{NEWLINE.join([str(rule) for rule in self.place_piece_rules])}'
 
 def generate_rules():
+    #function that generated a set of rules, not used anymore .... xxxxx
     return [Rule(True,None) for _ in range(random.randint(MINRULES,MAXRULES))],[Rule(False,None) for _ in range(random.randint(MINRULES,MAXRULES))]
 ```
 > ***rule.py***
@@ -889,22 +1014,27 @@ def generate_rules():
 ```python
 import random
 import agents.quartolib as quartolib
+#characteristic that are true
 TRUE_PROPS=['high','solid','square','coloured']
+#is the object a number (float, bool, int) or a string?
 def isnumber(a):
     return (isinstance(a,int) or isinstance(a,float) or isinstance(a,bool))
+#transform to a numeric representation
 def tonum(a):
     if isnumber(a):
         return a
     else:
         return 0
+#dict of if operations, each operation is characterized by the name and an associated lambda that takes two parameters(even the ones that
+# use only one like not) and return a value
 IF_OPERATIONS={
     'mul': (lambda a,b: a*b if isnumber(a) and isnumber(b) else float(a) if isnumber(a) else float(b) if isnumber(b) else 0),
     'add': (lambda a,b: a+b if isnumber(a) and isnumber(b) else float(a) if isnumber(a) else float(b) if isnumber(b) else 0),
     'sub': (lambda a,b: a-b if isnumber(a) and isnumber(b) else float(a) if isnumber(a) else float(b) if isnumber(b) else 0),
     'not': (lambda a,b: not a),
     'or': (lambda a,b: a or b),
-    #'truechar':(lambda a,b: a in TRUE_PROPS),
-    #'falsechar':(lambda a,b: a not in TRUE_PROPS),
+    'truechar':(lambda a,b: a in TRUE_PROPS),
+    'falsechar':(lambda a,b: a not in TRUE_PROPS),
     'gt':(lambda a,b:tonum(a)>tonum(b)),
     'lt':(lambda a,b:tonum(a)<tonum(b)),
     'gte':(lambda a,b:tonum(a)>=tonum(b)),
@@ -913,7 +1043,7 @@ IF_OPERATIONS={
     'eq': (lambda a,b: a==b),
     'ne': (lambda a,b: a!=b)
 }
-
+#then operations in case of place rules, these operations returns either the left node, or the right node always!
 THEN_PLACE_OPERATIONS={
     'colmore': (lambda quarto,a,b: a if quartolib.compare_elements_in_columns(quarto,a[0],b[0]) else b),
     'colless': (lambda quarto,a,b: b if quartolib.compare_elements_in_columns(quarto,a[0],b[0]) else a),
@@ -925,7 +1055,7 @@ THEN_PLACE_OPERATIONS={
     'antidiagless': (lambda quarto,a,b: b if quartolib.compare_elements_in_antidiag(quarto,a,b) else a),
     'possible': (lambda quarto,a,b: a if quartolib.place_possible(quarto,a,b) else b)
 }
-
+#then operations in case of choose piece, these operations returns either the left node, or the right node always!
 THEN_CHOOSE_OPERATIONS={
     'moreunique': (lambda quarto,a,b: a if quartolib.compare_uniqueness(quarto,a,b) else b),
     'lessunique': (lambda quarto,a,b: b if quartolib.compare_uniqueness(quarto,a,b) else a),
@@ -945,53 +1075,66 @@ THEN_CHOOSE_OPERATIONS={
     'similardiag': (lambda quarto,a,b: b if quartolib.more_different_in_antidiagonal(quarto,a,b) else a),
     'possible': (lambda quarto,a,b: a if quartolib.choose_possible(quarto,a,b) else b)
 }
-
+#then leaf place functions, these functions are the ones in the leafs of the then trees, they return a placing action
 THEN_LEAF_PLACE_FUNCTIONS=quartolib.get_then_place_functions()
-
+#then leaf choose functions, these functions are the ones used in the leafs of the then trees, they return a choosing action
 THEN_LEAF_CHOOSE_FUNCTIONS=quartolib.get_then_choose_functions()
 
 IF_OPERATIONS_LIST=list(IF_OPERATIONS.keys())
+#used choosing operations
 IF_OPERATIONS_CHOOSE=['not','or','and','ne','eq','ne']#,'truechar','falsechar']
+#used placing operations
 IF_OPERATIONS_PLACE=['mul','add','sub','not','or','gt','lt','gte','lte','and','eq','ne']
+#operations that require only one operand
 IF_OPERATIONS_WITH_ONE_OPERAND=set(['not','truechar','falsechar'])
+#list of functions that the if tree can use, these functions return basic data about the current state of the game
+#they can be seen as a cooked status
 IF_CHOOSE_FUNCTIONS=quartolib.get_choose_functions()
 IF_PLACE_FUNCTIONS=quartolib.get_place_functions()
+#last type of value that a leaf in the if trees can be, a list of constants
 IF_PLACE_VALUES=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,True,False]
 IF_CHOOSE_VALUES=['high','not_high','solid','not_solid','coloured','not_coloured','square','not_square',True,False]
+#list composing everything in groups
+IF_POSSIBLE_CHOOSE_VALUES=[[(op,'operation') for op in IF_OPERATIONS_CHOOSE],[(func,'function') for func in IF_CHOOSE_FUNCTIONS]+[(val,'value') for val in IF_CHOOSE_VALUES]]
 
-IF_POSSIBLE_CHOOSE_VALUES=[[(op,'operation') for op in IF_OPERATIONS_CHOOSE],[(func,'function') for func in IF_CHOOSE_FUNCTIONS],[(val,'value') for val in IF_CHOOSE_VALUES]]
-
-IF_POSSIBLE_PLACE_VALUES=[[(op,'operation') for op in IF_OPERATIONS_PLACE],[(func,'function') for func in IF_PLACE_FUNCTIONS],[(val,'value') for val in IF_PLACE_VALUES]]
+IF_POSSIBLE_PLACE_VALUES=[[(op,'operation') for op in IF_OPERATIONS_PLACE],[(func,'function') for func in IF_PLACE_FUNCTIONS]+[(val,'value') for val in IF_PLACE_VALUES]]
 
 THEN_POSSIBLE_CHOOSE_VALUES=[[(op,'operation') for op in list(THEN_CHOOSE_OPERATIONS.keys())],[(leaf,'leaf') for leaf in THEN_LEAF_CHOOSE_FUNCTIONS]]
 
 THEN_POSSIBLE_PLACE_VALUES=[[(op,'operation') for op in list(THEN_PLACE_OPERATIONS.keys())],[(leaf,'leaf') for leaf in THEN_LEAF_PLACE_FUNCTIONS]]
 
-
-RECURSION_MAX_DEPTH=100
+#max depth of trees
+MAX_DEPTH=6
 class ThenNode:
+    #the then node is the action used after checking the condition of the rule
     def __init__(self,parent,choose_piece,quarto) -> None:
         self.parent=parent
+        #info about parent, choose rule etc.
         self.quarto=quarto
         self.choose_piece=choose_piece
+        #childs are other ThenNode elements
         self.childs=[]
+        #update depth
         self.depth=0 if self.parent is None else self.parent.depth+1
-        value=random.choice(THEN_POSSIBLE_CHOOSE_VALUES[0 if self.parent is None else random.choice([0,1,1]) if self.depth<RECURSION_MAX_DEPTH else 1] if self.choose_piece else THEN_POSSIBLE_PLACE_VALUES[0 if self.parent is None else random.choice([0,1,1]) if self.depth<RECURSION_MAX_DEPTH else 1])
+        #value is a random pick from the possible ones, if the depth is maxed out pick a leaf node, otherwise random between operation or leaf
+        #value=random.choice(THEN_POSSIBLE_CHOOSE_VALUES[0 if self.parent is None else random.choice([0,1,1]) if self.depth<MAX_DEPTH else 1] if self.choose_piece else THEN_POSSIBLE_PLACE_VALUES[0 if self.parent is None else random.choice([0,1,1]) if self.depth<MAX_DEPTH else 1])
+        value=random.choice(THEN_POSSIBLE_CHOOSE_VALUES[0 if self.parent is None else random.randint(0,1) if self.depth<MAX_DEPTH else 1] if self.choose_piece else THEN_POSSIBLE_PLACE_VALUES[0 if self.parent is None else random.randint(0,1) if self.depth<MAX_DEPTH else 1])
+        #setup info about the node, like if the node is a leaf etc.
         if self.parent is None:
             value=('possible','operation')
         self.value=value[0]
         self.op=value[1]=='operation'
         self.leaf=value[1]=='leaf'
         self.optdict=None
-        #print(f'Value for node is {value} , op {self.op} func {self.func} val {self.val}')
         if self.op:
+            #if the node is an operation generate two childs
             self.optdict=THEN_CHOOSE_OPERATIONS if self.choose_piece else THEN_PLACE_OPERATIONS
             self.childs.append(ThenNode(self,self.choose_piece,self.quarto))
             self.childs.append(ThenNode(self,self.choose_piece,self.quarto))
 
     def mutate(self):
         if random.random()<0.5 and self.op:
-            #mutate one of the childs
+            #mutate one of the childs or both
             num=random.randint(0,2)
             if num==0 or num==2:
                 self.childs[0].mutate()
@@ -1001,26 +1144,30 @@ class ThenNode:
             #mutate myself
             if random.random()<0.5 and self.parent is not None:
                 #go full random, don't care about what type of thing I was before
-                value=random.choice(THEN_POSSIBLE_CHOOSE_VALUES[random.choice([0,1,1]) if self.depth<RECURSION_MAX_DEPTH else 1] if self.choose_piece else THEN_POSSIBLE_PLACE_VALUES[random.choice([0,1,1]) if self.depth<RECURSION_MAX_DEPTH else 1])
+                #value=random.choice(THEN_POSSIBLE_CHOOSE_VALUES[random.choice([0,1,1]) if self.depth<MAX_DEPTH else 1] if self.choose_piece else THEN_POSSIBLE_PLACE_VALUES[random.choice([0,1,1]) if self.depth<MAX_DEPTH else 1])
+                value=random.choice(THEN_POSSIBLE_CHOOSE_VALUES[0 if self.parent is None else random.randint(0,1) if self.depth<MAX_DEPTH else 1] if self.choose_piece else THEN_POSSIBLE_PLACE_VALUES[0 if self.parent is None else random.randint(0,1) if self.depth<MAX_DEPTH else 1])
                 self.value=value[0]
                 self.op=value[1]=='operation'
                 self.leaf=value[1]=='leaf'
                 if self.op:
                     self.optdict=THEN_CHOOSE_OPERATIONS if self.choose_piece else THEN_PLACE_OPERATIONS
+                    #if i didn't have any old child or randomly generate new ones because Im an operation
                     if random.random()<1/3 or len(self.childs)!=2:
                         self.childs=[]
                         self.childs.append(ThenNode(self,self.choose_piece,self.quarto))
                         self.childs.append(ThenNode(self,self.choose_piece,self.quarto))
                     elif len(self.childs)==2:
+                        #else If I had some childs and the random picked this option mutate some childs or none
                         num=random.randint(0,6)
                         if num==0 or num==2:
                             self.childs[0].mutate()
                         if num==1 or num==2:
                             self.childs[1].mutate()
                 else:
+                    #If im not an operation setup childs as nothing again
                     self.childs=[]
             else:
-                #keep my old type
+                #keep my old type(leaf or operation)
                 value=random.choice(THEN_POSSIBLE_CHOOSE_VALUES[0 if self.op else 1] if self.choose_piece else THEN_POSSIBLE_PLACE_VALUES[0 if self.op else 1])
                 self.value=value[0]
                 self.op=value[1]=='operation'
@@ -1042,6 +1189,7 @@ class ThenNode:
                     self.childs=[]
 
     def set_quarto(self,quarto):
+        #set quarto for myself and childs
         self.quarto=quarto
         if self.op:
             for child in self.childs:
@@ -1049,13 +1197,16 @@ class ThenNode:
 
     def action(self):
         if not self.op:
+            #if Im a leaf call the function that I refer to
             return self.value(self.quarto)
         else:
+            #else evaluate childs and then call teh operation
             evals=[child.action() for child in self.childs]
             left_val,rigth_val=evals[0],evals[1]
             return self.optdict[self.value](self.quarto,left_val,rigth_val)
 
     def __str__(self):
+        #string view
         if self.op:
             return f'({str(self.childs[0])}) {self.value} ({str(self.childs[1])})'
         else:
@@ -1063,19 +1214,24 @@ class ThenNode:
 
 
 class IfNode:
+    #the ifnode node is the condition controlled for the rule, very similar to thennode
     def __init__(self,parent,choose_piece,quarto) -> None:
         self.parent=parent
+        #info
         self.quarto=quarto
         self.choose_piece=choose_piece
         self.childs=[]
-        value=random.choice(IF_POSSIBLE_CHOOSE_VALUES[0 if self.parent is None else random.randint(0,2)] if choose_piece else IF_POSSIBLE_PLACE_VALUES[0 if self.parent is None else random.randint(0,2)])
+        self.depth=0 if self.parent is None else self.parent.depth+1
+        #value=random.choice(IF_POSSIBLE_CHOOSE_VALUES[0 if self.parent is None else random.randint(0,2)] if choose_piece else IF_POSSIBLE_PLACE_VALUES[0 if self.parent is None else random.randint(0,2)])
+        #get random value
+        value=random.choice(IF_POSSIBLE_CHOOSE_VALUES[0 if self.parent is None else random.randint(0,1) if self.depth<MAX_DEPTH else 1] if self.choose_piece else IF_POSSIBLE_PLACE_VALUES[0 if self.parent is None else random.randint(0,1) if self.depth<MAX_DEPTH else 1])
+        #setup value info
         self.value=value[0]
         self.op=value[1]=='operation'
         self.func=value[1]=='function'
         self.val=value[1]=='value'
-        #print(f'Value for node is {value} , op {self.op} func {self.func} val {self.val}')
         if self.op:
-            #print(f'Need a child or two')
+            #print(f'Need a child or two depending if the operation requires one or two')
             self.childs.append(IfNode(self,self.choose_piece,self.quarto))
             if self.value not in IF_OPERATIONS_WITH_ONE_OPERAND:
                 self.childs.append(IfNode(self,self.choose_piece,self.quarto))
@@ -1085,7 +1241,7 @@ class IfNode:
 
     def mutate(self):
         if random.random()<0.5 and self.op:
-            #mutate one of the childs
+            #mutate one of the childs or both if I have two and the random pick that option
             num=random.randint(0,2)
             if (num==0 or num==2) or (self.value in IF_OPERATIONS_WITH_ONE_OPERAND):
                 self.childs[0].mutate()
@@ -1095,7 +1251,8 @@ class IfNode:
             #mutate myself
             if random.random()<0.5 and self.parent is not None:
                 #go full random, don't care about what type of thing I was before
-                value=random.choice(IF_POSSIBLE_CHOOSE_VALUES[random.randint(0,2)] if self.choose_piece else IF_POSSIBLE_PLACE_VALUES[random.randint(0,2)])
+                #value=random.choice(IF_POSSIBLE_CHOOSE_VALUES[random.randint(0,2)] if self.choose_piece else IF_POSSIBLE_PLACE_VALUES[random.randint(0,2)])
+                value=random.choice(IF_POSSIBLE_CHOOSE_VALUES[0 if self.parent is None else random.randint(0,1) if self.depth<MAX_DEPTH else 1] if self.choose_piece else IF_POSSIBLE_PLACE_VALUES[0 if self.parent is None else random.randint(0,1) if self.depth<MAX_DEPTH else 1])
                 self.value=value[0]
                 self.op=value[1]=='operation'
                 self.func=value[1]=='function'
@@ -1123,7 +1280,7 @@ class IfNode:
                     self.childs=[]
             else:
                 #keep my old type
-                value=random.choice(IF_POSSIBLE_CHOOSE_VALUES[0 if self.op else 1 if self.func else 2] if self.choose_piece else IF_POSSIBLE_PLACE_VALUES[0 if self.op else 1 if self.func else 2])
+                value=random.choice(IF_POSSIBLE_CHOOSE_VALUES[0 if self.op else 1] if self.choose_piece else IF_POSSIBLE_PLACE_VALUES[0 if self.op else 1])
                 self.value=value[0]
                 self.op=value[1]=='operation'
                 self.func=value[1]=='function'
@@ -1157,18 +1314,21 @@ class IfNode:
                 child.set_quarto(self.quarto)
 
     def eval(self):
+        #evaluate condition
         if not self.op:
+            #if Im a leaf return my constant value or call the function Im associated with
             if self.val:
                 return self.value
             else:
                 return self.value(self.quarto)
         else:
+            #else evaluate childs and then call operation
             evals=[child.eval() for child in self.childs] + [None,None]
             left_val,rigth_val=evals[0],evals[1]
-            #print(f'Left val {left_val} --- rigth val {rigth_val}')
             return IF_OPERATIONS[self.value](left_val,rigth_val)
 
     def __str__(self):
+        #string view
         if self.op:
             if self.value not in IF_OPERATIONS_WITH_ONE_OPERAND:
                 return f'({str(self.childs[0])}) {self.value} ({str(self.childs[1])})'
@@ -1182,54 +1342,66 @@ class IfNode:
 
 class Rule:
     def __init__(self,choose_piece,quarto):
+        #my trees, the if one and the then one and my info, so if Im a choose piece rule or a place piece one, and my quarto
         self.quarto=quarto
         self.choose_piece=choose_piece
         self.if_node=IfNode(None,self.choose_piece,self.quarto)
         self.then_node=ThenNode(None,self.choose_piece,self.quarto)
         #data and evaluations
+        #does the if tree make sense
         self.rule_make_sense=True
+        #does the then tree make sense
         self.action_make_sense=True
         self.rule_quality=0
         self.rule_evaluations=0
         self.rule_true=0
+        #game evaluations
         self.game_true=0
         self.game_evaluations=0
+        #evaluations on then tree
         self.action_possible=0
 
     def set_quarto(self,quarto):
+        #set my quarto and the ones of the if and then trees
         self.quarto=quarto
         self.if_node.set_quarto(self.quarto)
         self.then_node.set_quarto(self.quarto)
 
     def evaluate(self):
+        #check the if node, this function is called to check if the rule is true or not
         return self.if_node.eval()
 
     def evaluate_game_rule(self,won):
+        # update rule trueness and its evaluations
         self.rule_true+=self.game_true
         self.rule_evaluations+=self.game_evaluations
-        self.rule_make_sense= self.rule_true>0 and self.rule_true<0.5*self.rule_evaluations
+        #rule make sense check if the if tree make sense, so if it is true at least one time but not true every single time, the limit
+        # is put at 2/3 now, but it can be changed making rules more strict
+        self.rule_make_sense= self.rule_true>0 and self.rule_true<(2/3)*self.rule_evaluations
+        #action make sense check if the then tree is plausible, so if the times that the action returned is possible is pretty high or not
         self.action_make_sense=self.rule_true>0 and self.action_possible>=(2*(self.rule_true/3))
+        #rule quality is a metric that helps rules that are taken a small amount of time but in those times they perform good, this metric
+        # is used to sort rules, because I want to check first rules that are more precise
         self.rule_quality+=((self.game_evaluations-self.game_true)/self.game_evaluations) * 10 if won else -((self.game_true/self.game_evaluations) * 10)
-        #self.rule_fitness= 10 * self.rule_quality + 15 * self.rule_true
 
     def mutate(self,rule_make_sense=True,action_possible=True):
-        if (random.random()<0.3 and rule_make_sense) or (rule_make_sense and not action_possible):
-            #mutate then tree
+        if (random.random()<0.5 and rule_make_sense) or (rule_make_sense and not action_possible):
+            #mutate then tree if the if tree make sense and need to update the then one, or randomly
             self.then_node.mutate()
         else:
             #mutate if tree
             self.if_node.mutate()
-        #self.if_node.mutate()
-        #self.then_node.mutate()
         #reset values
         self.reset_evaluation_stats()
 
     def evaluated(self,thruth,action):
+        #update stats of the game at each pick or choose
         self.game_evaluations+=1
         self.game_true+=thruth
         self.action_possible+=action
 
     def reset_evaluation_stats(self):
+        #reset all the stats, function called after mutations, crossover and stuff
         self.rule_make_sense=True
         self.action_make_sense=True
         self.rule_quality=0
@@ -1240,17 +1412,21 @@ class Rule:
         self.action_possible=0
 
     def reset_game_stats(self):
+        #reset just stats of the game
         self.game_true=0
         self.game_evaluations=0
 
     def needs_evaluation(self):
+        # do I need to be evaluated or Im an old rule with already some data
         return self.rule_evaluations==0
 
     def action(self):
+        # check the action associated with the rule, so check the then node
         return self.then_node.action()
 
     def __str__(self):
-        return f'Rule: if {str(self.if_node)} ---> action {self.then_node} ::= rule quality {self.rule_quality}'
+        #string view
+        return f'Rule: If {str(self.if_node)} --> Then {self.then_node}'
 ```
 > ***quartolib.py***
 > This file contains a set of functions that returns informations that a certain rule can exploit
@@ -1258,20 +1434,24 @@ class Rule:
 import numpy as np
 import random
 import quarto
-
+#this library is composed of all the function used by nodes etc., a lot of them are redundant
 NUMROWS=4
 NUMCOLUMNS=4
 POSITIONS=[(a,b) for a in range(4) for b in range(4)]
 def get_placed_pieces(board) :
+    #get pieces placed on the board already
     return list(board[board!=-1])
 
 def num_pieces_chosen(quarto) -> int:
+    #get num of pieces on the board
     return len(get_placed_pieces(quarto.get_board_status()))
 
 def num_pieces_left(quarto) -> int:
+    #num of pieces not on board
     return (NUMROWS*NUMCOLUMNS) - len(get_placed_pieces(quarto.get_board_status()))
 
 def less_used_characteristic(quarto):
+    #get less used characteristic, so maybe high etc.
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(board)
     free_pieces=[_ for _ in range(NUMROWS*NUMCOLUMNS) if _ not in placed_pieces]
@@ -1294,6 +1474,7 @@ def less_used_characteristic(quarto):
     return minchar
 
 def most_used_characteristic(quarto):
+    #get most used characteristic, so maybe high etc.
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(board)
     free_pieces=[_ for _ in range(NUMROWS*NUMCOLUMNS) if _ not in placed_pieces]
@@ -1316,18 +1497,23 @@ def most_used_characteristic(quarto):
     return maxchar
 
 def most_used_row(quarto):
+    #get which row is the most used one
     return np.argmax(np.count_nonzero(quarto.get_board_status()!=-1,axis=1))
 
 def most_used_column(quarto):
+    #get which column is the most used one
     return np.argmax(np.count_nonzero(quarto.get_board_status()!=-1,axis=0))
 
 def less_used_row(quarto):
+    #get which row is the least used one
     return np.argmin(np.count_nonzero(quarto.get_board_status()!=-1,axis=1))
 
 def less_used_column(quarto):
+    #get which column is the least used one
     return np.argmin(np.count_nonzero(quarto.get_board_status()!=-1,axis=0))
 
 def most_used_column_not_complete(quarto):
+    #get which column is the most used one, except for the full ones
     count=np.count_nonzero(quarto.get_board_status()!=-1,axis=0).tolist()
     maxcount=0
     maxcol=0
@@ -1338,6 +1524,7 @@ def most_used_column_not_complete(quarto):
     return maxcol
 
 def most_used_row_not_complete(quarto):
+    #get which row is the most used one, except for the full ones
     count=np.count_nonzero(quarto.get_board_status()!=-1,axis=1).tolist()
     maxcount=0
     maxrow=0
@@ -1348,63 +1535,80 @@ def most_used_row_not_complete(quarto):
     return maxrow
 
 def num_elements_in_antidiagonal(quarto):
+    #num pieces in the antidiagonal
     return np.count_nonzero(np.fliplr(quarto.get_board_status()).diagonal()!=-1)
 
 def num_elements_in_diagonal(quarto):
+    #num pieces in the diagonal
     return np.count_nonzero(quarto.get_board_status().diagonal()!=-1)
 
 def num_pieces_in_most_used_row(quarto):
+    #num pieces in the most used row
     return np.count_nonzero(quarto.get_board_status()!=-1,axis=1)[most_used_row(quarto)]
 
 def num_pieces_in_most_used_column(quarto):
+    #num pieces in the most used column
     return np.count_nonzero(quarto.get_board_status()!=-1,axis=1)[most_used_column(quarto)]
 
 def num_pieces_in_most_used_row_not_complete(quarto):
+    #num pieces in most used row not complete
     return np.count_nonzero(quarto.get_board_status()!=-1,axis=1)[most_used_row_not_complete(quarto)]
 
 def num_pieces_in_most_used_column_not_complete(quarto):
+    #num pieces in most used column not complete
     return np.count_nonzero(quarto.get_board_status()!=-1,axis=1)[most_used_column_not_complete(quarto)]
 
 def num_pieces_in_less_used_row(quarto):
+    #num pieces in less used row
     return np.count_nonzero(quarto.get_board_status()!=-1,axis=1)[less_used_column(quarto)]
 
 def num_pieces_in_less_used_column(quarto):
+    #num pieces in less used column
     return np.count_nonzero(quarto.get_board_status()!=-1,axis=1)[less_used_column(quarto)]
 
 def element_in_less_used_column(quarto):
+    #pick a place in the less used column
     column=less_used_column(quarto)
     possible_placements=[(a[1],a[0]) for a in np.argwhere(quarto.get_board_status()==-1).tolist() if a[1]==column]
     return random.choice(possible_placements)
 
 def element_in_less_used_row(quarto):
+    #pick a place in the least used row
     row=less_used_row(quarto)
     possible_placements=[(a[1],a[0]) for a in np.argwhere(quarto.get_board_status()==-1).tolist() if a[0]==row]
     return random.choice(possible_placements)
 
 def element_in_most_used_row_not_complete(quarto):
+    #pick a place in the most used row that is yet to fill
     row=most_used_row_not_complete(quarto)
     possible_placements=[(a[1],a[0]) for a in np.argwhere(quarto.get_board_status()==-1).tolist() if a[0]==row]
     return random.choice(possible_placements)
 
 def element_in_most_used_column_not_complete(quarto):
+    #pick a place in the most used column that is yet to fill
     column=most_used_column_not_complete(quarto)
     possible_placements=[(a[1],a[0]) for a in np.argwhere(quarto.get_board_status()==-1).tolist() if a[1]==column]
     return random.choice(possible_placements)
 
 
 def element_in_diagonal(quarto):
+    #pick a place in the diagonal
     return random.choice([a for a in POSITIONS if a[0]==a[1]])
 
 def element_in_antidiagonal(quarto):
+    #pick a place in the antidiagonal
     return random.choice([a for a in POSITIONS if a[0]+a[1]==NUMROWS-1])
 
 def element_in_corner(quarto):
+    #pick a place in the corner, so the border
     return random.choice([a for a in POSITIONS if a[0]==0 or a[0]==NUMCOLUMNS-1 or a[1]==0 or a[1]==NUMROWS-1])
 
 def element_inside(quarto):
+    #pick a place not in the border
     return random.choice([a for a in POSITIONS if a[0]!=0 and a[0]!=NUMCOLUMNS-1 and a[1]!=0 and a[1]!=NUMROWS-1])
 
 def not_high_piece(quarto):
+    #pick a short piece, the functions below are all similar
     return random.choice([a for a in range(NUMCOLUMNS*NUMROWS) if not quarto.get_piece_charachteristics(a).HIGH])
     
 def not_solid_piece(quarto):
@@ -1429,33 +1633,40 @@ def square_piece(quarto):
     return random.choice([a for a in range(NUMCOLUMNS*NUMROWS) if quarto.get_piece_charachteristics(a).SQUARE])
 
 def place_possible(quarto,a,b):
-    return True if a in [(a[1],a[0]) for a in np.argwhere(quarto.get_board_status()==-1).tolist()] else False
+    #get if a is possible, or b is possible
+    return a in [(a[1],a[0]) for a in np.argwhere(quarto.get_board_status()==-1).tolist()]
 
 def choose_possible(quarto,a,b):
-    return True if a in [_ for _ in range(NUMROWS*NUMCOLUMNS) if _ not in get_placed_pieces(quarto.get_board_status())] else False
+    #get if a is possible or b is possible
+    return a in [_ for _ in range(NUMROWS*NUMCOLUMNS) if _ not in get_placed_pieces(quarto.get_board_status())]
 
 def compare_elements_in_columns(quarto,a,b):
+    #is a column more full than b one?
     board=quarto.get_board_status()
     ela,elb=np.count_nonzero(board[:,a]!=-1),np.count_nonzero(board[:,b]!=-1)
     return True if ela>elb and ela!=NUMROWS else False
 
 
 def compare_elements_in_rows(quarto,a,b):
+    #is a row more full than b one?
     board=quarto.get_board_status()
     ela,elb=np.count_nonzero(board[a,:]!=-1),np.count_nonzero(board[b,:]!=-1)
     return True if ela>elb and ela!=NUMCOLUMNS else False
 
 def compare_elements_in_diag(quarto,a,b):
+    #is a diagonal more full than b one?
     board=quarto.get_board_status()
     ela,elb=np.count_nonzero(np.diagonal(board,a[0]-a[1])!=-1),np.count_nonzero(np.diagonal(board,b[0]-b[1])!=-1)
     return ela>elb
 
 def compare_elements_in_antidiag(quarto,a,b):
+    #is a antidiagonal more full than b one?
     board=quarto.get_board_status()
     ela,elb=np.count_nonzero(np.diagonal(np.fliplr(board),a[0]-a[1])!=-1),np.count_nonzero(np.diagonal(np.fliplr(board),b[0]-b[1])!=-1)
     return ela>elb
 
 def compare_uniqueness(quarto,a,b):
+    #is a more unique than b?
     apiece,bpiece=quarto.get_piece_charachteristics(a),quarto.get_piece_charachteristics(b)
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(board)
@@ -1476,10 +1687,12 @@ def compare_uniqueness(quarto,a,b):
 
 
 def compare_trues(quarto,a,b):
+    #does a have more true characteristics than b?
     apiece,bpiece=quarto.get_piece_charachteristics(a),quarto.get_piece_charachteristics(b)
     return apiece.HIGH+apiece.COLOURED+apiece.SOLID+apiece.SQUARE>bpiece.HIGH+bpiece.COLOURED+bpiece.SOLID+bpiece.SQUARE
 
 def more_different_in_most_used_row_not_complete(quarto,a,b):
+    #is a more unique in the most used row that is yet to complete than b?
     apiece,bpiece=quarto.get_piece_charachteristics(a),quarto.get_piece_charachteristics(b)
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(board[most_used_row_not_complete(quarto),:])
@@ -1501,6 +1714,7 @@ def more_different_in_most_used_row_not_complete(quarto,a,b):
     return aval>bval
 
 def more_different_in_most_used_column_not_complete(quarto,a,b):
+    #is a more unique in the most used column that is yet to complete than b?
     apiece,bpiece=quarto.get_piece_charachteristics(a),quarto.get_piece_charachteristics(b)
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(board[:,most_used_column_not_complete(quarto)])
@@ -1522,6 +1736,7 @@ def more_different_in_most_used_column_not_complete(quarto,a,b):
     return aval>bval
     
 def more_different_in_less_used_row(quarto,a,b):
+    #is a more unique in the less used row than b?
     apiece,bpiece=quarto.get_piece_charachteristics(a),quarto.get_piece_charachteristics(b)
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(board[less_used_row(quarto),:])
@@ -1543,6 +1758,7 @@ def more_different_in_less_used_row(quarto,a,b):
     return aval>bval
 
 def more_different_in_less_used_column(quarto,a,b):
+    #is a more unique in the less used column than b?
     apiece,bpiece=quarto.get_piece_charachteristics(a),quarto.get_piece_charachteristics(b)
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(board[:,less_used_column(quarto)])
@@ -1564,6 +1780,7 @@ def more_different_in_less_used_column(quarto,a,b):
     return aval>bval
 
 def more_different_in_diagonal(quarto,a,b):
+    #is a more unique in the diagonal than b?
     apiece,bpiece=quarto.get_piece_charachteristics(a),quarto.get_piece_charachteristics(b)
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(np.diag(board))
@@ -1585,6 +1802,7 @@ def more_different_in_diagonal(quarto,a,b):
     return aval>bval
 
 def more_different_in_antidiagonal(quarto,a,b):
+    #is a more unique in the antidiagonal than b?
     apiece,bpiece=quarto.get_piece_charachteristics(a),quarto.get_piece_charachteristics(b)
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(np.fliplr(board).diagonal())
@@ -1606,6 +1824,7 @@ def more_different_in_antidiagonal(quarto,a,b):
     return aval>bval
 
 def characteristic_in_most_used_row_not_complete(quarto):
+    #get a characteristic used in the most used row yet to complete
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(board[most_used_row_not_complete(quarto),:])
     placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
@@ -1623,6 +1842,7 @@ def characteristic_in_most_used_row_not_complete(quarto):
     return chars[0] if len(chars)>0 else 'high'
 
 def characteristic_in_most_used_column_not_complete(quarto):
+    #get a characteristic used in the most used column yet to complete
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(board[:,most_used_column_not_complete(quarto)])
     placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
@@ -1641,6 +1861,7 @@ def characteristic_in_most_used_column_not_complete(quarto):
 
 
 def characteristic_in_less_used_column(quarto):
+    #get a characteristic used in the least used column
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(board[:,less_used_column(quarto)])
     placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
@@ -1658,6 +1879,7 @@ def characteristic_in_less_used_column(quarto):
     return chars[0] if len(chars)>0 else 'high'
 
 def characteristic_in_less_used_row(quarto):
+    #get a characteristic used in the least used row
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(board[less_used_row(quarto),:])
     placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
@@ -1675,6 +1897,7 @@ def characteristic_in_less_used_row(quarto):
     return chars[0] if len(chars)>0 else 'high'
 
 def characteristic_in_diagonal(quarto):
+    #get a characteristic used in the diagonal
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(np.diag(board))
     placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
@@ -1692,6 +1915,7 @@ def characteristic_in_diagonal(quarto):
     return chars[0] if len(chars)>0 else 'high'
 
 def characteristic_in_antidiagonal(quarto):
+    #get a characteristic used in the antidiagonal
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(np.fliplr(board).diagonal())
     placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
@@ -1709,6 +1933,7 @@ def characteristic_in_antidiagonal(quarto):
     return chars[0] if len(chars)>0 else 'high'
 
 def characteristic_not_in_most_used_row_not_complete(quarto):
+    #get a characteristic NOT USED in the most used row yet to complete
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(board[most_used_row_not_complete(quarto),:])
     placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
@@ -1726,6 +1951,7 @@ def characteristic_not_in_most_used_row_not_complete(quarto):
     return chars[0] if len(chars)>0 else 'high'
 
 def characteristic_not_in_most_used_column_not_complete(quarto):
+    #get a characteristic NOT USED in the most used column yet to complete
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(board[:,most_used_column_not_complete(quarto)])
     placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
@@ -1744,6 +1970,7 @@ def characteristic_not_in_most_used_column_not_complete(quarto):
 
 
 def characteristic_not_in_less_used_column(quarto):
+    #get a characteristic NOT USED in the least used column
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(board[:,less_used_column(quarto)])
     placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
@@ -1761,6 +1988,7 @@ def characteristic_not_in_less_used_column(quarto):
     return chars[0] if len(chars)>0 else 'high'
 
 def characteristic_not_in_less_used_row(quarto):
+    #get a characteristic NOT USED in the least used row
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(board[less_used_row(quarto),:])
     placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
@@ -1778,6 +2006,7 @@ def characteristic_not_in_less_used_row(quarto):
     return chars[0] if len(chars)>0 else 'high'
 
 def characteristic_not_in_diagonal(quarto):
+    #get a characteristic NOT USED in the diagonal
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(np.diag(board))
     placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
@@ -1795,6 +2024,7 @@ def characteristic_not_in_diagonal(quarto):
     return chars[0] if len(chars)>0 else 'high'
 
 def characteristic_not_in_antidiagonal(quarto):
+    #get a characteristic NOT USED in the antidiagonal
     board=quarto.get_board_status()
     placed_pieces=get_placed_pieces(np.fliplr(board).diagonal())
     placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
@@ -1810,6 +2040,8 @@ def characteristic_not_in_antidiagonal(quarto):
         placed_pieces_char['not_square']+=not piece_char.SQUARE
     chars=[k for k,v in placed_pieces_char.items() if v==0]
     return chars[0] if len(chars)>0 else 'high'
+
+#functions that serve kinda as an export, they return function that we want the genomes to use
 
 def get_then_place_functions():
     return [element_in_less_used_row,element_in_less_used_column,element_in_most_used_row_not_complete,element_in_most_used_column_not_complete,element_inside,element_in_diagonal,element_in_antidiagonal,element_in_corner]
@@ -1831,222 +2063,7 @@ def get_place_functions():
         num_pieces_in_most_used_row,num_pieces_in_most_used_column_not_complete,num_pieces_in_most_used_row_not_complete,
         num_pieces_chosen,num_pieces_left,most_used_row,less_used_row,most_used_column,less_used_column,most_used_row_not_complete,most_used_column_not_complete]
 ```
-> ***actionslib.py***
-> ***This file IS NOT used anymore as it was intended!!! Now it is used just because it has random_choose and random_place functions, before ir was a set of actions already pre built, this was used when the then node was just a random pick from an array of actions pre built, so now it could be USELESS!***
-```python
-from .quartolib import *
-import random
-import copy
 
-def random_choose(quarto) -> int:
-    return random.randint(0, 15)
-
-def random_place(quarto) -> tuple:
-    return random.randint(0, 3), random.randint(0, 3)
-
-def pick_piece_with_char(quarto,characteristic,possible_pieces):
-    pieces=copy.deepcopy(possible_pieces)
-    random.shuffle(pieces)
-    for a in pieces:
-        piece=quarto.get_piece_charachteristics(a)
-        #print(f'Piece {a} with char High {piece.HIGH} Coloured {piece.COLOURED} Solid {piece.SOLID} Square {piece.SQUARE}')
-        if (characteristic=='high'and piece.HIGH) or (characteristic=='coloured'and piece.COLOURED) or (characteristic=='solid' and piece.SOLID) or (characteristic=='square' and piece.SQUARE):
-            #print(f'Chosen piece {a} with char High {piece.HIGH} Coloured {piece.COLOURED} Solid {piece.SOLID} Square {piece.SQUARE}')
-            return a
-        if (characteristic=='not_high'and not piece.HIGH) or (characteristic=='not_coloured'and not piece.COLOURED) or (characteristic=='not_solid' and not piece.SOLID) or (characteristic=='not_square' and not piece.SQUARE):
-            #print(f'Chosen piece {a} with char High {piece.HIGH} Coloured {piece.COLOURED} Solid {piece.SOLID} Square {piece.SQUARE}')
-            return a
-    return pieces[0]
-
-def pick_piece_without_char(quarto,characteristic,possible_pieces):
-    pieces=copy.deepcopy(possible_pieces)
-    random.shuffle(pieces)
-    for a in pieces:
-        piece=quarto.get_piece_charachteristics(a)
-        #print(f'Piece {a} with char High {piece.HIGH} Coloured {piece.COLOURED} Solid {piece.SOLID} Square {piece.SQUARE}')
-        if (characteristic=='high'and not piece.HIGH) or (characteristic=='coloured'and not piece.COLOURED) or (characteristic=='solid' and not piece.SOLID) or (characteristic=='square' and not piece.SQUARE):
-            #print(f'Chosen piece {a} with char High {piece.HIGH} Coloured {piece.COLOURED} Solid {piece.SOLID} Square {piece.SQUARE}')
-            return a
-        if (characteristic=='not_high'and piece.HIGH) or (characteristic=='not_coloured'and piece.COLOURED) or (characteristic=='not_solid' and piece.SOLID) or (characteristic=='not_square' and piece.SQUARE):
-            #print(f'Chosen piece {a} with char High {piece.HIGH} Coloured {piece.COLOURED} Solid {piece.SOLID} Square {piece.SQUARE}')
-            return a
-    return pieces[0]
-
-def choose_piece_that_have_most_unique_char(quarto) -> int:
-    board=quarto.get_board_status()
-    placed_pieces=get_placed_pieces(board)
-    free_pieces=[_ for _ in range(NUMROWS*NUMCOLUMNS) if _ not in placed_pieces]
-    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
-    for piece in placed_pieces:
-        piece_char=quarto.get_piece_charachteristics(piece)
-        placed_pieces_char['high']+=piece_char.HIGH
-        placed_pieces_char['coloured']+=piece_char.COLOURED
-        placed_pieces_char['solid']+=piece_char.SOLID
-        placed_pieces_char['square']+=piece_char.SQUARE
-        placed_pieces_char['not_high']+=not piece_char.HIGH
-        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
-        placed_pieces_char['not_solid']+=not piece_char.SOLID
-        placed_pieces_char['not_square']+=not piece_char.SQUARE
-    minval,minchar=None,'high'
-    for k,v in placed_pieces_char.items():
-        if minval is None or minval>v:
-            minval=v
-            minchar=k
-    #print(f'Placed pieces {placed_pieces} free pieces {free_pieces} chars {placed_pieces_char} min char {minchar}')
-    return pick_piece_with_char(quarto,minchar,free_pieces)
-
-def choose_piece_that_have_less_unique_char(quarto) -> int:
-    board=quarto.get_board_status()
-    placed_pieces=get_placed_pieces(board)
-    free_pieces=[_ for _ in range(NUMROWS*NUMCOLUMNS) if _ not in placed_pieces]
-    placed_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
-    for piece in placed_pieces:
-        piece_char=quarto.get_piece_charachteristics(piece)
-        placed_pieces_char['high']+=piece_char.HIGH
-        placed_pieces_char['coloured']+=piece_char.COLOURED
-        placed_pieces_char['solid']+=piece_char.SOLID
-        placed_pieces_char['square']+=piece_char.SQUARE
-        placed_pieces_char['not_high']+=not piece_char.HIGH
-        placed_pieces_char['not_coloured']+=not piece_char.COLOURED
-        placed_pieces_char['not_solid']+=not piece_char.SOLID
-        placed_pieces_char['not_square']+=not piece_char.SQUARE
-    maxval,maxchar=None,'high'
-    for k,v in placed_pieces_char.items():
-        if maxval is None or maxval<v:
-            maxval=v
-            maxchar=k
-    #print(f'Placed pieces {placed_pieces} free pieces {free_pieces} chars {placed_pieces_char} min char {minchar}')
-    return pick_piece_with_char(quarto,maxchar,free_pieces)
-
-def choose_piece_with_random_available_char(quarto) -> int:
-    board=quarto.get_board_status()
-    placed_pieces=get_placed_pieces(board)
-    free_pieces=[_ for _ in range(NUMROWS*NUMCOLUMNS) if _ not in placed_pieces]
-    free_pieces_char={'high':0,'not_high':0,'coloured':0,'not_coloured':0,'solid':0,'not_solid':0,'square':0,'not_square':0}
-    for piece in free_pieces:
-        piece_char=quarto.get_piece_charachteristics(piece)
-        free_pieces_char['high']+=piece_char.HIGH
-        free_pieces_char['coloured']+=piece_char.COLOURED
-        free_pieces_char['solid']+=piece_char.SOLID
-        free_pieces_char['square']+=piece_char.SQUARE
-        free_pieces_char['not_high']+=not piece_char.HIGH
-        free_pieces_char['not_coloured']+=not piece_char.COLOURED
-        free_pieces_char['not_solid']+=not piece_char.SOLID
-        free_pieces_char['not_square']+=not piece_char.SQUARE
-    #print(f'Placed pieces {placed_pieces} free pieces {free_pieces} chars {placed_pieces_char} min char {minchar}')
-    return pick_piece_with_char(quarto,random.choice([k for k,v in free_pieces_char.items() if v>0]),free_pieces)
-
-def choose_piece_with_most_true_chars(quarto) -> int:
-    board=quarto.get_board_status()
-    placed_pieces=get_placed_pieces(board)
-    free_pieces=[_ for _ in range(NUMROWS*NUMCOLUMNS) if _ not in placed_pieces]
-    maxtrues=0
-    maxpiece=None
-    for piece in free_pieces:
-        piece_char=quarto.get_piece_charachteristics(piece)
-        trues=piece_char.HIGH+piece_char.COLOURED+piece_char.SOLID+piece_char.SQUARE
-        if trues>=maxtrues:
-            maxtrues=trues
-            maxpiece=piece
-    #print(f'Placed pieces {placed_pieces} free pieces {free_pieces} chars {placed_pieces_char} min char {minchar}')
-    return maxpiece
-
-def choose_piece_with_less_true_chars(quarto) -> int:
-    board=quarto.get_board_status()
-    placed_pieces=get_placed_pieces(board)
-    free_pieces=[_ for _ in range(NUMROWS*NUMCOLUMNS) if _ not in placed_pieces]
-    mintrues=None
-    minpiece=None
-    for piece in free_pieces:
-        piece_char=quarto.get_piece_charachteristics(piece)
-        trues=piece_char.HIGH+piece_char.COLOURED+piece_char.SOLID+piece_char.SQUARE
-        if mintrues is None or trues<=mintrues:
-            mintrues=trues
-            minpiece=piece
-    #print(f'Placed pieces {placed_pieces} free pieces {free_pieces} chars {placed_pieces_char} min char {minchar}')
-    return minpiece
-
-def place_less_used_row(quarto) -> tuple:
-    return random.randint(0, 3), less_used_row(quarto)
-
-def place_most_used_row(quarto) -> tuple:
-    return random.randint(0, 3), most_used_row_not_complete(quarto)
-
-def place_less_used_column(quarto) -> tuple:
-    return less_used_column(quarto), random.randint(0, 3)
-
-def place_most_used_column(quarto) -> tuple:
-    return most_used_column_not_complete(quarto), random.randint(0, 3)
-
-def place_less_used_row_less_used_column(quarto) -> tuple:
-    return less_used_column(quarto), less_used_row(quarto)
-
-def place_less_used_row_most_used_column(quarto) -> tuple:
-    return most_used_column_not_complete(quarto), less_used_row(quarto)
-
-def place_most_used_row_less_used_column(quarto) -> tuple:
-    return less_used_column(quarto), most_used_row_not_complete(quarto)
-
-def place_most_used_row_most_used_column(quarto) -> tuple:
-    return most_used_column_not_complete(quarto), most_used_row_not_complete(quarto)
-
-def place_at_diagonal_if_available(quarto) -> tuple:
-    possible_placements=[(a[1],a[0]) for a in np.argwhere(quarto.get_board_status()==-1).tolist()]
-    possible_diagonal_placements=[p for p in possible_placements if p[0]==p[1]]
-    if len(possible_diagonal_placements)>0:
-        return random.choice(possible_diagonal_placements)
-    else:
-        return random.choice(possible_placements)
-
-def place_at_antidiagonal_if_available(quarto) -> tuple:
-    possible_placements=[(a[1],a[0]) for a in np.argwhere(quarto.get_board_status()==-1).tolist()]
-    possible_antidiagonal_placements=[p for p in possible_placements if p[0]+p[1]==NUMROWS-1]
-    if len(possible_antidiagonal_placements)>0:
-        return random.choice(possible_antidiagonal_placements)
-    else:
-        return random.choice(possible_placements)
-
-def place_at_corner_if_available(quarto) -> tuple:
-    possible_placements=[(a[1],a[0]) for a in np.argwhere(quarto.get_board_status()==-1).tolist()]
-    possible_corner_placements=[p for p in possible_placements if p[0]==0 or p[0]==NUMCOLUMNS-1 or p[1]==0 or p[1]==NUMROWS-1]
-    if len(possible_corner_placements)>0:
-        return random.choice(possible_corner_placements)
-    else:
-        return random.choice(possible_placements)
-
-def place_inside_if_available(quarto) -> tuple:
-    possible_placements=[(a[1],a[0]) for a in np.argwhere(quarto.get_board_status()==-1).tolist()]
-    possible_inside_placements=[p for p in possible_placements if p[0]!=0 and p[0]!=NUMCOLUMNS-1 or p[1]!=0 and p[1]==NUMROWS-1]
-    if len(possible_inside_placements)>0:
-        return random.choice(possible_inside_placements)
-    else:
-        return random.choice(possible_placements)
-
-def place_not_at_diagonal_if_available(quarto) -> tuple:
-    possible_placements=[(a[1],a[0]) for a in np.argwhere(quarto.get_board_status()==-1).tolist()]
-    possible_notdiagonal_placements=[p for p in possible_placements if p[0]!=p[1]]
-    if len(possible_notdiagonal_placements)>0:
-        return random.choice(possible_notdiagonal_placements)
-    else:
-        return random.choice(possible_placements)
-
-def place_not_at_antidiagonal_if_available(quarto) -> tuple:
-    possible_placements=[(a[1],a[0]) for a in np.argwhere(quarto.get_board_status()==-1).tolist()]
-    possible_notantidiagonal_placements=[p for p in possible_placements if p[0]+p[1]!=NUMROWS-1]
-    if len(possible_notantidiagonal_placements)>0:
-        return random.choice(possible_notantidiagonal_placements)
-    else:
-        return random.choice(possible_placements)
-
-def get_choose_actions():
-    return [choose_piece_with_less_true_chars,choose_piece_with_most_true_chars,choose_piece_with_random_available_char,
-                choose_piece_that_have_less_unique_char,choose_piece_that_have_most_unique_char]
-
-def get_place_actions():
-    return [place_at_diagonal_if_available,place_at_antidiagonal_if_available,place_at_corner_if_available,place_inside_if_available,
-            place_not_at_diagonal_if_available,place_not_at_antidiagonal_if_available,place_less_used_row_less_used_column,
-                place_less_used_row_most_used_column,place_most_used_row_less_used_column,place_most_used_row_most_used_column]
-```
 ### Lab 1: Set Covering
 
 #### Proposed Solution
