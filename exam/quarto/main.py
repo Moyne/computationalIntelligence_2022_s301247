@@ -9,7 +9,10 @@ from agents.genome import Genome as myplayer
 from agents.genome import RandomPlayer 
 import dill as pickle
 from os.path import isfile
-
+#git adds a carriage return that pickle doesn't like when unpickling, so I need to remove it from the file, to do so
+#I create a tmp file and remove it instantly
+import random
+import os
 
 def main(training,best_player_file,generations):
     mp=None
@@ -20,7 +23,19 @@ def main(training,best_player_file,generations):
     else:
         if isfile(best_player_file):
             #unpickle agent
-            mp=pickle.load(open(best_player_file,'rb'))
+            #get random number for tmp file
+            randomnum=random.randint(0,10000)
+            #open original file
+            with open(best_player_file,'rb') as f:
+                by=f.read()
+            #remove carriage returns from file
+            by=bytes([b for b in by if b!=13])
+            #store in new tmp file
+            with open('tmp'+str(randomnum)+best_player_file,'wb') as wf:
+                wf.write(by)
+            mp=pickle.load(open('tmp'+str(randomnum)+best_player_file,'rb'))
+            #remove tmp file
+            os.remove('tmp'+str(randomnum)+best_player_file)
             print(f'\n\nMy player is {mp}\n\nwith fitness: {mp.fitness} and win% of {mp.fitness+0.4*mp.random_pick}%\n')
         else:
             print(f'WARNING: Filename provided doesn\'t exists! If you don\'t have a trained player set the --training flag')
